@@ -48,29 +48,29 @@
         </el-row>
         <!-- 表格 -->
         <el-table :data="doctorData" stripe style="width: 100%" border>
-            <el-table-column prop="dId" label="账号" width="100">
+            <el-table-column prop="d_id" label="账号" width="100">
             </el-table-column>
-            <el-table-column prop="dName" label="姓名" width="80">
+            <el-table-column prop="d_name" label="姓名" width="80">
             </el-table-column>
-            <el-table-column prop="dGender" label="性别" width="60">
+            <el-table-column prop="d_gender" label="性别" width="60">
             </el-table-column>
-            <el-table-column prop="dPost" label="职位" width="100">
+            <el-table-column prop="d_post" label="职位" width="100">
             </el-table-column>
-            <el-table-column prop="dSection" label="科室" width="100">
+            <el-table-column prop="d_section" label="科室" width="100">
             </el-table-column>
-            <el-table-column prop="dCard" label="证件号">
+            <el-table-column prop="d_card" label="证件号">
             </el-table-column>
-            <el-table-column prop="dPhone" label="手机号">
+            <el-table-column prop="d_phone" label="手机号">
             </el-table-column>
-            <el-table-column prop="dEmail" label="邮箱" width="170">
+            <el-table-column prop="d_email" label="邮箱" width="170">
             </el-table-column>
-            <el-table-column prop="dAvgStar" label="评分/5分" width="80">
+            <el-table-column prop="d_avg_star" label="评分/5分" width="80">
             </el-table-column>
-            <el-table-column prop="dPrice" label="挂号费/元" width="100">
+            <el-table-column prop="d_price" label="挂号费/元" width="100">
             </el-table-column>
-            <el-table-column prop="dState" label="是否在职" width="80">
+            <el-table-column prop="d_state" label="是否在职" width="80">
                 <template slot-scope="scope">
-                    <el-tag type="success" v-if="scope.row.dState === 1"
+                    <el-tag type="success" v-if="scope.row.d_state === 1"
                         >在职</el-tag
                     >
                     <el-tag type="danger" v-else>离职</el-tag>
@@ -597,10 +597,8 @@ export default {
                 })
                 .then((res) => {
                     this.doctorData = res.data.data.doctors;
-
                     this.total = res.data.data.total;
-                    // console.log(res.data.data.map((item) => item.doctor));
-                    // console.log(res.data.data.doctors.map((item) => item.dId));
+                    console.log(res.data.data);
                 });
         },
     },

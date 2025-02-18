@@ -78,6 +78,7 @@
   </el-container>
 </template>
 <script>
+import request from "@/utils/request"; // 确保 request 已正确封装
 import jwtDecode from "jwt-decode";
 import { getToken, clearToken, getActivePath, setActivePath} from "@/utils/storage.js";
 export default {
@@ -88,7 +89,30 @@ export default {
       activePath:"",
     };
   },
+  mounted() {
+    this.getUserInfo();// 页面加载时获取用户信息
+  },
   methods: {
+    getUserInfo() {
+      const token = getToken(); // 获取 token
+      if (!token) {
+        return this.$message.error("请先登录！");
+      }
+
+      request.get("/getUserInfo", {
+        headers: { Authorization: `Bearer ${token}` } // 在请求头中携带 token
+      })
+        .then(res => {
+          if (res.data.status !== 200) {
+            return this.$message.error("获取用户信息失败");
+          }
+          this.userName = res.data.data.userName; // 设置用户名
+        })
+        .catch(err => {
+          console.error(err);
+          this.$message.error("获取用户信息失败");
+        });
+    },
     handleCommand(command) {
       if (command === "logout") {
         this.$confirm("此操作将退出登录, 是否继续?", "提示", {

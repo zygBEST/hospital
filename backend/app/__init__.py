@@ -4,7 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import secrets
 
-secret_key = secrets.token_hex(32)  # 生成一个64个字符的十六进制字符串,如果没有会发出警告提示
+secret_key = secrets.token_hex(
+    32
+)  # 生成一个64个字符的十六进制字符串,如果没有会发出警告提示
 # 创建 SQLAlchemy 实例
 db = SQLAlchemy()
 
@@ -27,5 +29,8 @@ def create_app():
 
     # 注册蓝图
     from app.Login.routes import Login
+    from app.Order.routes import Order
+
     app.register_blueprint(Login)
+    app.register_blueprint(Order)
     return app

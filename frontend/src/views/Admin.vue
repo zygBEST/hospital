@@ -2,13 +2,6 @@
   <el-container>
     <!-- 头部 -->
     <el-header>
-<!--      <div class="words">-->
-
-<!--        <span @click="menuClick('adminLayout')">-->
-
-<!--          <i class="el-icon-s-home" style="font-size: 26px;"> 医院管理系统</i>-->
-<!--        </span>-->
-<!--      </div>-->
       <div class="head-bar">
         <div class="header-ico">
           <!--      <i class="el-icon-s-home"></i>-->
@@ -27,10 +20,10 @@
             </div>
 
             <el-dropdown @command="handleCommand" class="user-name" trigger="click">
-          <span class="el-dropdown-link">
-           <span>欢迎您，<b>{{ userName }}</b>&nbsp;管理员&nbsp;</span>
-            <i class="el-icon-caret-bottom"></i>
-          </span>
+              <span class="el-dropdown-link">
+                <span>欢迎您，<b>{{ userName }}</b>&nbsp;管理员&nbsp;</span>
+                <i class="el-icon-caret-bottom"></i>
+              </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="logout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -44,13 +37,7 @@
       <!-- 侧边栏 -->
       <el-aside width="200px">
         <!-- 导航菜单 -->
-        <el-menu
-            background-color="#353744"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-          :default-active="activePath"
-          
-        >
+        <el-menu background-color="#353744" text-color="#fff" active-text-color="#ffd04b" :default-active="activePath">
 
           <el-menu-item index="adminLayout" @click="menuClick('adminLayout')">
             <i class="el-icon-s-home" style="font-size: 18px;"> 首页</i>
@@ -58,25 +45,25 @@
           <el-menu-item index="doctorList" @click="menuClick('doctorList')">
             <i class="el-icon-user" style="font-size: 18px;"> 医生信息管理</i>
           </el-menu-item>
-            <el-menu-item index="patientList" @click="menuClick('patientList')">
+          <el-menu-item index="patientList" @click="menuClick('patientList')">
             <i class="el-icon-user-solid" style="font-size: 18px;"> 患者信息管理</i>
           </el-menu-item>
-            <el-menu-item index="orderList" @click="menuClick('orderList')">
+          <el-menu-item index="orderList" @click="menuClick('orderList')">
             <i class="el-icon-postcard" style="font-size: 18px;"> 挂号信息管理</i>
           </el-menu-item>
-           <el-menu-item index="drugList" @click="menuClick('drugList')">
+          <el-menu-item index="drugList" @click="menuClick('drugList')">
             <i class="el-icon-first-aid-kit" style="font-size: 18px;"> 药物信息管理</i>
           </el-menu-item>
-           <el-menu-item index="checkList" @click="menuClick('checkList')">
+          <el-menu-item index="checkList" @click="menuClick('checkList')">
             <i class="el-icon-monitor" style="font-size: 18px;"> 检查项目管理</i>
           </el-menu-item>
-            <el-menu-item index="bedList" @click="menuClick('bedList')">
+          <el-menu-item index="bedList" @click="menuClick('bedList')">
             <i class="el-icon-office-building" style="font-size: 18px;"> 病床信息管理</i>
           </el-menu-item>
-            <el-menu-item index="arrangeIndex" @click="menuClick('arrangeIndex')">
+          <el-menu-item index="arrangeIndex" @click="menuClick('arrangeIndex')">
             <i class="el-icon-news" style="font-size: 18px;"> 排班信息管理</i>
           </el-menu-item>
-            <el-menu-item index="dataExpore" @click="menuClick('dataExpore')">
+          <el-menu-item index="dataExpore" @click="menuClick('dataExpore')">
             <i class="el-icon-s-data" style="font-size: 18px;"> 数据统计分析</i>
           </el-menu-item>
 
@@ -92,17 +79,41 @@
   </el-container>
 </template>
 <script>
+import request from "@/utils/request"; // 确保 request 已正确封装
 import jwtDecode from "jwt-decode";
-import { getToken, clearToken, getActivePath, setActivePath} from "@/utils/storage.js";
+import { getToken, clearToken, getActivePath, setActivePath } from "@/utils/storage.js";
 export default {
   name: "Admin",
   data() {
     return {
       userName: "",
-      activePath:"",
+      activePath: "",
     };
   },
+  mounted() {
+    this.getUserInfo();// 页面加载时获取用户信息
+  },
   methods: {
+    getUserInfo() {
+      const token = getToken(); // 获取 token
+      if (!token) {
+        return this.$message.error("请先登录！");
+      }
+
+      request.get("/getUserInfo", {
+        headers: { Authorization: `Bearer ${token}` } // 在请求头中携带 token
+      })
+        .then(res => {
+          if (res.data.status !== 200) {
+            return this.$message.error("获取用户信息失败");
+          }
+          this.userName = res.data.data.userName; // 设置用户名
+        })
+        .catch(err => {
+          console.error(err);
+          this.$message.error("获取用户信息失败");
+        });
+    },
     handleCommand(command) {
       if (command === "logout") {
         this.$confirm("此操作将退出登录, 是否继续?", "提示", {
@@ -110,34 +121,34 @@ export default {
           cancelButtonText: "取消",
           type: "warning",
         })
-            .then(() => {
-              clearToken();
-              this.$message({
-                type: "success",
-                message: "退出登录成功!",
-              });
-              this.$router.push("login");
-            })
-            .catch(() => {
-              this.$message({
-                type: "info",
-                message: "已取消",
-              });
+          .then(() => {
+            clearToken();
+            this.$message({
+              type: "success",
+              message: "退出登录成功!",
             });
+            this.$router.push("login");
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消",
+            });
+          });
 
       }
     },
     //token解码
-    tokenDecode(token){
+    tokenDecode(token) {
       if (token !== null)
-      return jwtDecode(token);
+        return jwtDecode(token);
     },
     //导航栏点击事件
-    menuClick(path){
-      this.activePath=path;
-            setActivePath(path);
-            if(this.$route.path !== "/"+path) this.$router.push(path);
-            console.log(path)
+    menuClick(path) {
+      this.activePath = path;
+      setActivePath(path);
+      if (this.$route.path !== "/" + path) this.$router.push(path);
+      console.log(path)
     },
     //退出登录
     logout() {
@@ -162,26 +173,29 @@ export default {
         });
     },
   },
-   created() {
+  created() {
     //  获取激活路径
-            this.activePath=getActivePath();
-            // 解码token
-            this.userName = this.tokenDecode(getToken()).aName;
+    this.activePath = getActivePath();
+    // 解码token
+    this.userName = this.tokenDecode(getToken()).aName;
 
-        }
+  }
 };
 </script>
 <style scoped lang="scss">
-.title{
+.title {
   cursor: pointer;
 }
+
 .el-header {
   background-color: #427cb3;
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   .words {
     text-align: center;
+
     span {
       color: black;
     }
@@ -189,16 +203,20 @@ export default {
 
   //border-bottom: 1px solid lightgrey;
 }
-.el-container{
-        height: 100%;
-    }
-.el-aside{
-  background-color:#353744;
+
+.el-container {
+  height: 100%;
+}
+
+.el-aside {
+  background-color: #353744;
   border-right: 1px solid lightgrey;
 }
-.el-menu{
+
+.el-menu {
   border: 0;
 }
+
 .head-bar {
   position: relative;
   box-sizing: border-box;

@@ -18,21 +18,6 @@
         </div>
       </div>
     </div>
-<!--    <div class="indexPeople" style="margin-left: 10px">-->
-<!--      <div class="userImage">-->
-<!--        <i class="el-icon-office-building" style="font-size: 132px"></i>-->
-<!--      </div>-->
-
-<!--      <div class="userFont">-->
-<!--        <div class="spanCure">-->
-<!--          <span>住院概况</span>-->
-<!--        </div>-->
-<!--        <div class="spanPeople">-->
-<!--          <span>今天住院总人数：{{ bedPeople }}</span>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
     <el-row>
       <el-col :span="24">
         <img src="@/assets/16.png" style="width: 641px;margin-left: 490px;">

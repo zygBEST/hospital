@@ -140,6 +140,53 @@ def patient_login():
     token = generate_token(patient.p_id)
     return jsonify({"status": 200, "message": "登录成功", "data": {"token": token}})
 
+# 解析 Token 并获取用户信息
+@Login.route("/getUserInfo", methods=["GET"])
+def get_user_info():
+    token = request.headers.get("Authorization")
+    if not token:
+        return jsonify({"status": 401, "message": "未提供 Token"}), 401
+    
+    try:
+        token = token.split("Bearer ")[1]  # 提取 token
+        payload = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+        user_id = payload["user_id"]  # 解析 token 获取 user_id
+    except jwt.ExpiredSignatureError:
+        return jsonify({"status": 401, "message": "Token 已过期"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"status": 401, "message": "Token 无效"}), 401
+    # 在数据库中查找用户
+    user = None
+    user_role = ""
+    user_name = ""
+
+    # 依次查找管理员、医生、患者
+    admin = Admini.query.filter_by(a_id=user_id).first()
+    doctor = Doctor.query.filter_by(d_id=user_id).first()
+    patient = Patient.query.filter_by(p_id=user_id).first()
+    
+    if admin:
+        user = admin
+        user_role = "管理员"
+        user_name = user.a_name
+    elif doctor:
+        user = doctor
+        user_role = "医生"
+        user_name = user.d_name
+    elif patient:
+        user = patient
+        user_role = "患者"
+        user_name = user.p_name
+        
+    if not user:
+        return jsonify({"status": 404, "message": "用户不存在"}), 404
+
+    return jsonify({
+        "status": 200,
+        "data": {
+            "userName": user_name
+        }
+    })
 
 if __name__ == "__main__":
     Login.run(debug=True)
