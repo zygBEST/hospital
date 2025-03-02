@@ -67,13 +67,13 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="手机号" label-width="80px" prop="pPhone">
-          <el-input v-model="registerForm.pPhone"></el-input>
+          <el-input v-model="registerForm.pPhone" maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="邮箱号" label-width="80px" prop="pEmail">
           <el-input v-model="registerForm.pEmail"></el-input>
         </el-form-item>
         <el-form-item label="身份证号" label-width="80px" prop="pCard">
-          <el-input v-model="registerForm.pCard"></el-input>
+          <el-input v-model="registerForm.pCard" maxlength="18"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -230,10 +230,9 @@ export default {
             })
             .then(res => {
               if (res.data.status !== 200)
-                return this.$message.error("账号或邮箱已被占用！");
+                return this.$message.error(res.data.message);
               this.registerFormVisible = false;
-              this.$message.success("注册成功！");
-              console.log(res);
+              this.$message.success(res.data.message);
             });
         } else {
           console.log("error submit!!");
@@ -368,71 +367,46 @@ export default {
           });
       }
     },
-    //提交表单
+    // 提交表单
     submitLoginForm(formName) {
       this.$refs[formName].validate(valid => {
-        if (valid) {
-          if (this.role === "管理员") {
-            var params = new URLSearchParams();
-            params.append("aId", this.loginForm.id);
-            params.append("aPassword", this.loginForm.password);
-
-            request
-              .post("admin/login", params)
-              .then(res => {
-                console.log(res);
-                if (res.data.status != 200)
-                  return this.$message.error("用户名或密码错误");
-                setToken(res.data.data.token);
-                this.$router.push("/adminLayout");
-              })
-              .catch(err => {
-                this.$message.error("用户名或密码错误");
-                console.error(err);
-              });
-          }
-          if (this.role === "医生") {
-            var params1 = new URLSearchParams();
-            params1.append("dId", this.loginForm.id);
-            params1.append("dPassword", this.loginForm.password);
-
-            request
-              .post("doctor/login", params1)
-              .then(res => {
-                console.log(res);
-                if (res.data.status != 200)
-                  return this.$message.error("用户名或密码错误");
-                setToken(res.data.data.token);
-                this.$router.push("/doctorLayout");
-              })
-              .catch(err => {
-                this.$message.error("用户名或密码错误");
-                console.error(err);
-              });
-          }
-          if (this.role === "患者") {
-            var params2 = new URLSearchParams();
-            params2.append("pId", this.loginForm.id);
-            params2.append("pPassword", this.loginForm.password);
-
-            request
-              .post("patient/login", params2)
-              .then(res => {
-                console.log(res);
-                if (res.data.status != 200)
-                  return this.$message.error("用户名或密码错误");
-                setToken(res.data.data.token);
-                this.$router.push("/patientLayout");
-              })
-              .catch(err => {
-                this.$message.error("用户名或密码错误");
-                console.error(err);
-              });
-          }
-        } else {
+        if (!valid) {
           console.log("error submit!!");
           return false;
         }
+
+        const roleMap = {
+          "管理员": { idKey: "aId", passwordKey: "aPassword", url: "admin/login", redirect: "/adminLayout" },
+          "医生": { idKey: "dId", passwordKey: "dPassword", url: "doctor/login", redirect: "/doctorLayout" },
+          "患者": { idKey: "pId", passwordKey: "pPassword", url: "patient/login", redirect: "/patientLayout" }
+        };
+
+        const roleConfig = roleMap[this.role];
+        if (!roleConfig) {
+          this.$message.error("请选择正确的角色");
+          return;
+        }
+
+        let params = new URLSearchParams();
+        params.append(roleConfig.idKey, this.loginForm.id);
+        params.append(roleConfig.passwordKey, this.loginForm.password);
+        params.append("user_role", this.role);
+        console.log(this.role);
+        
+
+        request.post(roleConfig.url, params)
+          .then(res => {
+            console.log(res);
+            if (res.data.status !== 200) {
+              return this.$message.error("用户名或密码错误");
+            }
+            setToken(res.data.data.token);
+            this.$router.push(roleConfig.redirect);
+          })
+          .catch(err => {
+            this.$message.error("用户名或密码错误");
+            console.error(err);
+          });
       });
     }
   }

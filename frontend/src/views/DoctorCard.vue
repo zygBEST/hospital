@@ -5,10 +5,7 @@
                 <tr>
                     <td style="">姓名：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dName"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dName"></el-input>
                     </td>
                 </tr>
                 <tr>
@@ -20,84 +17,55 @@
                 <tr>
                     <td>性别：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dGender"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dGender"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>手机号：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dPhone"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dPhone"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>身份证号：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dCard"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dCard"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>邮箱：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dEmail"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dEmail"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>职位：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dPost"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dPost"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>所属科室：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dSection"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dSection"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>挂号价格：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dPrice"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dPrice"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>评分：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dAvgStar"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dAvgStar"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>简介：</td>
                     <td>
-                        <el-input
-                            disabled
-                            v-model="doctorData.dIntroduction"
-                            type="textarea"
-                            :rows="4"
-                        ></el-input>
+                        <el-input disabled v-model="doctorData.dIntroduction" type="textarea" :rows="4"></el-input>
                     </td>
                 </tr>
             </table>
@@ -120,7 +88,7 @@ export default {
         //请求医生信息
         requestDoctor() {
             request
-                .get("admin/findDoctor", {
+                .get("doctor/findDoctorById", {
                     params: {
                         dId: this.userId,
                     },
@@ -130,23 +98,21 @@ export default {
                         return this.$message.error("获取数据失败");
                     this.doctorData = res.data.data;
                 });
-        },
-        //token解码
-        tokenDecode(token) {
-            if (token !== null) return jwtDecode(token);
-        },
+        }
     },
     created() {
         //解码token信息
-        this.userId = this.tokenDecode(getToken()).dId;
+        const token = getToken();
+        this.userId = jwtDecode(token).user_id;
         this.requestDoctor();
-        console.log(this.userId);
-    },
+        console.log(this.userId)
+    }
 };
 </script>
 <style lang="scss" scope>
-td, th {
-  white-space: nowrap;
-  padding: 10px;
+td,
+th {
+    white-space: nowrap;
+    padding: 10px;
 }
 </style>

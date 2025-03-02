@@ -6,23 +6,14 @@
             <el-row type="flex">
                 <el-col :span="6">
                     <el-input v-model="query" placeholder="请输入患者id查询">
-                        <el-button
-                            slot="append"
-                            icon="el-icon-search"
-                            @click="requestBeds"
-                        ></el-button>
+                        <el-button slot="append" icon="el-icon-search" @click="requestBeds"></el-button>
                     </el-input>
                 </el-col>
                 <el-col :span="6"></el-col>
                 <el-col :span="6">
-                    <el-button
-                        type="primary"
-                        style="font-size: 18px"
-                        @click="addFormVisible = true"
-                    >
-                    <i class="el-icon-circle-plus-outline" style="font-size: 22px;"></i>
-                        增加床位</el-button
-                    >
+                    <el-button type="primary" style="font-size: 18px" @click="addFormVisible = true">
+                        <i class="el-icon-circle-plus-outline" style="font-size: 22px;"></i>
+                        增加床位</el-button>
                 </el-col>
             </el-row>
             <!-- 表格 -->
@@ -30,52 +21,29 @@
                 <el-table-column label="床号" prop="bId"></el-table-column>
                 <el-table-column label="患者id" prop="pId"></el-table-column>
                 <el-table-column label="医生id" prop="dId"></el-table-column>
-                <el-table-column
-                    label="开始时间"
-                    prop="bStart"
-                ></el-table-column>
-                <el-table-column
-                    label="申请理由"
-                    prop="bReason"
-                ></el-table-column>
+                <el-table-column label="开始时间" prop="bStart"></el-table-column>
+                <el-table-column label="申请理由" prop="bReason"></el-table-column>
                 <el-table-column label="状态" prop="bState">
                     <template slot-scope="scope">
-                        <el-tag v-if="scope.row.bState === 1" type="danger"
-                            >已占用</el-tag
-                        >
-                        <el-tag v-if="scope.row.bState === 0" type="success"
-                            >空</el-tag
-                        >
+                        <el-tag v-if="scope.row.bState === 1" type="danger">已占用</el-tag>
+                        <el-tag v-if="scope.row.bState === 0" type="success">空</el-tag>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
-                        <el-button
-                            style="font-size: 14px"
-                            type="success"
-                            @click="deleteDialog(scope.row.bId)"
-                        ><i class="el-icon-delete" style="font-size: 22px;"></i></el-button>
-                        <el-button
-                            style="font-size: 14px"
-                            type="danger"
-                            @click="emptyDialog(scope.row.bId)"
-                        ><i class="el-icon-refresh" style="font-size: 22px;"></i></el-button>
+                        <el-button style="font-size: 14px" type="success" @click="deleteDialog(scope.row.bId)"><i
+                                class="el-icon-delete" style="font-size: 22px;"></i></el-button>
+                        <el-button style="font-size: 14px" type="danger" @click="emptyDialog(scope.row.bId)"><i
+                                class="el-icon-refresh" style="font-size: 22px;"></i></el-button>
                     </template>
                 </el-table-column>
             </el-table>
 
             <!-- 分页 -->
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                background
-                layout="total, sizes, prev, pager, next, jumper"
-                :current-page="pageNumber"
-                :page-size="size"
-                :page-sizes="[1, 2, 4, 8, 16]"
-                :total="total"
-            >
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" background
+                layout="total, sizes, prev, pager, next, jumper" :current-page="pageNumber" :page-size="size"
+                :page-sizes="[1, 2, 4, 8, 16]" :total="total">
             </el-pagination>
         </el-card>
 
@@ -87,10 +55,10 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="addFormVisible = false" style="font-size: 18px;"><i class="el-icon-close" style="font-size: 20px;"></i> 取 消</el-button>
-                <el-button type="primary" @click="addBed('ruleForm')"
-                    style="font-size: 18px;"><i class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button
-                >
+                <el-button @click="addFormVisible = false" style="font-size: 18px;"><i class="el-icon-close"
+                        style="font-size: 20px;"></i> 取 消</el-button>
+                <el-button type="primary" @click="addBed('ruleForm')" style="font-size: 18px;"><i class="el-icon-check"
+                        style="font-size: 20px;"></i> 确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -124,10 +92,8 @@ export default {
         //清空床位操作
         emptyBed(id) {
             request
-                .get("bed/emptyBed", {
-                    params: {
-                        bId: id,
-                    },
+                .post("admin/emptyBed", {
+                        bId: id
                 })
                 .then((res) => {
                     this.requestBeds();
@@ -159,10 +125,8 @@ export default {
         //删除床位操作
         deleteBed(id) {
             request
-                .get("bed/deleteBed", {
-                    params: {
-                        bId: id,
-                    },
+                .post("admin/deleteBed", {
+                    bId: id,
                 })
                 .then((res) => {
                     this.requestBeds();
@@ -178,10 +142,7 @@ export default {
             })
                 .then(() => {
                     this.deleteBed(id);
-                    this.$message({
-                        type: "success",
-                        message: "删除成功!",
-                    });
+                    this.$message.success("删除成功!");
                 })
                 .catch(() => {
                     this.$message({
@@ -195,19 +156,17 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     request
-                        .get("bed/addBed", {
-                            params: {
-                                bId: this.addForm.bId,
-                                pId: -1,
-                                dId: -1,
-                            },
+                        .post("admin/addBed", {
+                            bId: this.addForm.bId,
+                            pId: -1,
+                            dId: -1
                         })
                         .then((res) => {
                             if (res.data.status !== 200)
-                                return this.$message.error("床号或已被占用！");
+                                return this.$message.error(res.data.message);
                             this.addFormVisible = false;
                             this.requestBeds();
-                            this.$message.success("增加床位成功！");
+                            this.$message.success(res.data.message);
                             console.log(res);
                         });
                 } else {
@@ -230,7 +189,7 @@ export default {
         // 加载检查列表
         requestBeds() {
             request
-                .get("bed/findAllBeds", {
+                .get("admin/findAllBeds", {
                     params: {
                         pageNumber: this.pageNumber,
                         size: this.size,
@@ -254,6 +213,7 @@ export default {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
 .el-form {
     margin-top: 0;
 }

@@ -6,60 +6,35 @@
             <el-row type="flex">
                 <el-col :span="6">
                     <el-input v-model="query" placeholder="请输入名称查询">
-                        <el-button
-                            slot="append"
-                            icon="el-icon-search"
-                            @click="requestChecks"
-                        ></el-button>
+                        <el-button slot="append" icon="el-icon-search" @click="requestChecks"></el-button>
                     </el-input>
                 </el-col>
                 <el-col :span="6"></el-col>
                 <el-col :span="6">
-                    <el-button
-                        type="primary"
-                        style="font-size: 18px"
-                        @click="addFormVisible = true"
-                    >
-                    <i class="el-icon-circle-plus-outline" style="font-size: 22px;"></i>
-                        增加项目</el-button
-                    >
+                    <el-button type="primary" style="font-size: 18px" @click="addFormVisible = true">
+                        <i class="el-icon-circle-plus-outline" style="font-size: 22px;"></i>
+                        增加项目</el-button>
                 </el-col>
             </el-row>
             <!-- 表格 -->
             <el-table :data="checkData" stripe style="width: 100%" border>
                 <el-table-column label="编号" prop="chId"></el-table-column>
                 <el-table-column label="项目" prop="chName"></el-table-column>
-                <el-table-column
-                    label="价格/元"
-                    prop="chPrice"
-                ></el-table-column>
+                <el-table-column label="价格/元" prop="chPrice"></el-table-column>
                 <el-table-column label="操作" width="200" fixed="right">
                     <template slot-scope="scope">
-                        <el-button
-                            style="font-size: 14px"
-                            type="success"
-                            @click="modifyDialog(scope.row.chId)"
-                        ><i class="el-icon-edit-outline" style="font-size: 22px;"></i></el-button>
-                        <el-button
-                            style="font-size: 14px"
-                            type="danger"
-                            @click="deleteDialog(scope.row.chId)"
-                        ><i class="el-icon-delete" style="font-size: 22px;"></i></el-button>
+                        <el-button style="font-size: 14px" type="success" @click="modifyDialog(scope.row.chId)"><i
+                                class="el-icon-edit-outline" style="font-size: 22px;"></i></el-button>
+                        <el-button style="font-size: 14px" type="danger" @click="deleteDialog(scope.row.chId)"><i
+                                class="el-icon-delete" style="font-size: 22px;"></i></el-button>
                     </template>
                 </el-table-column>
             </el-table>
 
             <!-- 分页 -->
-            <el-pagination
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                background
-                layout="total, sizes, prev, pager, next, jumper"
-                :current-page="pageNumber"
-                :page-size="size"
-                :page-sizes="[1, 2, 4, 8, 16]"
-                :total="total"
-            >
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" background
+                layout="total, sizes, prev, pager, next, jumper" :current-page="pageNumber" :page-size="size"
+                :page-sizes="[1, 2, 4, 8, 16]" :total="total">
             </el-pagination>
         </el-card>
 
@@ -77,10 +52,10 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="addFormVisible = false" style="font-size: 18px;"><i class="el-icon-close" style="font-size: 20px;"></i> 取 消</el-button>
-                <el-button type="primary" @click="addCheck('ruleForm')"
-                    style="font-size: 18px;"><i class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button
-                >
+                <el-button @click="addFormVisible = false" style="font-size: 18px;"><i class="el-icon-close"
+                        style="font-size: 20px;"></i> 取 消</el-button>
+                <el-button type="primary" @click="addCheck('ruleForm')" style="font-size: 18px;"><i
+                        class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button>
             </div>
         </el-dialog>
 
@@ -88,10 +63,7 @@
         <el-dialog title="修改检查项目" :visible.sync="modifyFormVisible">
             <el-form :model="modifyForm" :rules="rules" ref="ruleForm">
                 <el-form-item label="编号" prop="chId" label-width="80px">
-                    <el-input
-                        v-model.number="modifyForm.chId"
-                        disabled
-                    ></el-input>
+                    <el-input v-model.number="modifyForm.chId" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="名称" prop="chName" label-width="80px">
                     <el-input v-model="modifyForm.chName"></el-input>
@@ -101,10 +73,10 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="modifyFormVisible = false" style="font-size: 18px;"><i class="el-icon-close" style="font-size: 20px;"></i> 取 消</el-button>
-                <el-button type="primary" @click="modifyCheck('ruleForm')"
-                    style="font-size: 18px;"><i class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button
-                >
+                <el-button @click="modifyFormVisible = false" style="font-size: 18px;"><i class="el-icon-close"
+                        style="font-size: 20px;"></i> 取 消</el-button>
+                <el-button type="primary" @click="modifyCheck('ruleForm')" style="font-size: 18px;"><i
+                        class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -154,12 +126,10 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     request
-                        .get("check/modifyCheck", {
-                            params: {
-                                chId: this.modifyForm.chId,
-                                chName: this.modifyForm.chName,
-                                chPrice: this.modifyForm.chPrice,
-                            },
+                        .post("admin/modifyCheck", {
+                            chId: this.modifyForm.chId,
+                            chName: this.modifyForm.chName,
+                            chPrice: this.modifyForm.chPrice,
                         })
                         .then((res) => {
                             if (res.data.status !== 200)
@@ -178,10 +148,8 @@ export default {
         //打开修改对话框
         modifyDialog(id) {
             request
-                .get("check/findCheck", {
-                    params: {
-                        chId: id,
-                    },
+                .post("admin/findCheck", {
+                    chId: id,
                 })
                 .then((res) => {
                     if (res.data.status !== 200)
@@ -194,10 +162,8 @@ export default {
         //删除检查操作
         deleteCheck(id) {
             request
-                .get("check/deleteCheck", {
-                    params: {
-                        chId: id,
-                    },
+                .post("admin/deleteCheck", {
+                    chId: id
                 })
                 .then((res) => {
                     this.requestChecks();
@@ -230,12 +196,10 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     request
-                        .get("check/addCheck", {
-                            params: {
-                                chId: this.addForm.chId,
-                                chName: this.addForm.chName,
-                                chPrice: this.addForm.chPrice,
-                            },
+                        .post("admin/addCheck", {
+                            chId: this.addForm.chId,
+                            chName: this.addForm.chName,
+                            chPrice: this.addForm.chPrice,
                         })
                         .then((res) => {
                             if (res.data.status !== 200)
@@ -267,12 +231,12 @@ export default {
         // 加载检查列表
         requestChecks() {
             request
-                .get("check/findAllChecks", {
+                .get("admin/findAllChecks", {
                     params: {
                         pageNumber: this.pageNumber,
                         size: this.size,
-                        query: this.query,
-                    },
+                        query: this.query
+                    }
                 })
                 .then((res) => {
                     this.checkData = res.data.data.checks;
@@ -291,6 +255,7 @@ export default {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
 .el-form {
     margin-top: 0;
 }

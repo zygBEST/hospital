@@ -1,29 +1,15 @@
-<!--
-
--->
 <template>
     <div>
         <el-card>
             <div>
                 <div>
-                    <i
-                        class="el-icon-date"
-                        style="margin: 10px; font-size: 22px"
-                    >
-                        请选择值班日期：</i
-                    >
+                    <i class="el-icon-date" style="margin: 10px; font-size: 22px">请选择值班日期：</i>
                 </div>
                 <br />
                 <ul class="dateUl">
                     <li v-for="monthDay in monthDays" :key="monthDay">
-                        <el-button
-                            icon="el-icon-date"
-                            type="primary"
-                            style="margin: 5px"
-                            @click="dateClick(monthDay)"
-                        >
-                            {{ monthDay }}</el-button
-                        >
+                        <el-button icon="el-icon-date" type="primary" style="margin: 5px" @click="dateClick(monthDay)">
+                            {{ monthDay }}</el-button>
                     </li>
                 </ul>
             </div>
@@ -95,13 +81,16 @@ export default {
     cursor: not-allowed; // 鼠标变化
     pointer-events: none;
 }
+
 .router-view {
     margin-top: 20px;
 }
+
 .sectionUl li {
     display: inline;
     padding: 60px;
 }
+
 .dateUl li {
     display: inline;
     //margin: 5px;
