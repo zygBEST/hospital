@@ -4,14 +4,14 @@
   justify-content: center;
  background-color: #427cb3;;
 " class="login-wrap">
-    <div style="display: flex; background-color: white; width: 50%; border-radius: 5px; overflow: hidden">
+    <div style="display: flex; background-color: rgba(255, 255, 255, 0.82); width: 50%; border-radius: 5px; overflow: hidden">
       <div style="flex: 1">
-        <img src="@/assets/17.jpg" alt="" style="width: 400px;height: 400px" />
+        <img src="@/assets/login1.png" alt="" style="width: 400px;height: 400px" />
       </div>
-      <div style="flex: 1; display: flex; align-items: center; justify-content: center">
+      <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
         <el-form :model="loginForm" style="width: 80%" :rules="loginRules" ref="ruleForm">
           <div style="font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 20px">
-            欢迎登录医院管理系统
+            欢迎登录医务管理系统
           </div>
           <el-form-item prop="id">
             <!--必须绑定v-model输入框才能输入字符---->
@@ -419,7 +419,7 @@ export default {
   width: 100%;
   height: 100%;
   background: #0f9876;
-  background-image: url("../assets/img/login-bg.svg");
+  background-image: url("../assets/doctor.jpeg");
   background-size: 100% 100%;
 }
 </style>

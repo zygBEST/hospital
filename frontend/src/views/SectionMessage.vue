@@ -4,9 +4,7 @@
         <el-card>
             <!-- 面包屑 -->
             <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/orderOperate' }"
-                    >科室选择</el-breadcrumb-item
-                >
+                <el-breadcrumb-item :to="{ path: '/orderOperate' }">科室选择</el-breadcrumb-item>
                 <el-breadcrumb-item>日期选择</el-breadcrumb-item>
                 <el-breadcrumb-item>挂号</el-breadcrumb-item>
             </el-breadcrumb>
@@ -14,27 +12,15 @@
             <!-- 两边布局 -->
             <div class="head">
                 <div>
-                    <i
-                        class="iconfont icon-r-user1"
-                        style="margin: 5px; font-size: 26px"
-                    >
-                        {{ sectionOpt }}医生列表</i
-                    >
+                    <i class="iconfont icon-r-user1" style="margin: 5px; font-size: 26px">{{ sectionOpt }}医生列表</i>
                 </div>
 
                 <!-- 选择挂号时间 -->
                 <div>
-                    <i class="iconfont icon-r-paper" style="font-size: 22px">
-                        请选择你要挂号的日期：</i
-                    >
+                    <i class="iconfont icon-r-paper" style="font-size: 22px">请选择你要挂号的日期：</i>
                     <ul class="dateUl">
                         <li v-for="monthDay in monthDays" :key="monthDay">
-                            <el-button
-                                icon="iconfont icon-r-paper"
-                                @click="dateClick(monthDay)"
-                            >
-                                {{ monthDay }}</el-button
-                            >
+                            <el-button icon="iconfont icon-r-paper" @click="dateClick(monthDay)">{{ monthDay}}</el-button>
                         </li>
                     </ul>
                 </div>
@@ -42,11 +28,7 @@
 
             <!-- 表格 -->
             <el-table :data="sectionData" stripe style="width: 100%" border>
-                <el-table-column
-                    type="index"
-                    label="序号"
-                    width="60"
-                ></el-table-column>
+                <el-table-column type="index" label="序号" width="60"></el-table-column>
                 <el-table-column prop="dId" label="工号" width="80">
                 </el-table-column>
                 <el-table-column prop="dName" label="姓名" width="80">
@@ -55,11 +37,7 @@
                 </el-table-column>
                 <el-table-column prop="dPost" label="职位" width="100">
                 </el-table-column>
-                <el-table-column
-                    prop="dSection"
-                    label="科室"
-                    width="100"
-                ></el-table-column>
+                <el-table-column prop="dSection" label="科室" width="100"></el-table-column>
                 <el-table-column prop="dIntroduction" label="简介">
                 </el-table-column>
                 <el-table-column prop="dPrice" label="挂号费用/元" width="80">
@@ -68,14 +46,9 @@
                 </el-table-column>
                 <el-table-column label="操作" width="140" v-if="clickTag">
                     <template slot-scope="scope">
-                        <el-button
-                            class="iconfont icon-r-paper"
-                            style="font-size: 14px"
-                            type="warning"
-                            @click="openClick(scope.row.dId, scope.row.dName)"
-                        >
-                            挂号</el-button
-                        >
+                        <el-button class="iconfont icon-r-paper" style="font-size: 14px" type="warning"
+                            @click="openClick(scope.row.dId, scope.row.dName)">
+                            挂号</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -83,66 +56,33 @@
         <!-- 挂号对话框 -->
         <el-dialog title="填写挂号信息" :visible.sync="orderFormVisible">
             <el-form :model="orderForm" ref="orderForm" :rules="orderRules">
-                <el-form-item
-                    label="挂号时间段"
-                    label-width="100px"
-                    prop="oTime"
-                >
-                    <el-select
-                        v-model="orderForm.oTime"
-                        placeholder="请选择"
-                        no-data-text="请尝试预约明日"
-                    >
-                        <el-option
-                            v-for="time in times"
-                            :key="time"
-                            :label="time"
-                            :value="time"
-                        >
+                <el-form-item label="挂号时间段" label-width="100px" prop="oTime">
+                    <el-select v-model="orderForm.oTime" placeholder="请选择" no-data-text="请尝试预约明日">
+                        <el-option v-for="time in times" :key="time" :label="time" :value="time">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="挂号日期" label-width="100px">
-                    <el-input
-                        v-model="orderForm.orderDate"
-                        autocomplete="off"
-                        disabled
-                    ></el-input>
+                    <el-input v-model="orderForm.orderDate" autocomplete="off" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="医生工号" label-width="100px">
-                    <el-input
-                        v-model="orderForm.dId"
-                        autocomplete="off"
-                        disabled
-                    ></el-input>
+                    <el-input v-model="orderForm.dId" autocomplete="off" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="医生姓名" label-width="100px">
-                    <el-input
-                        v-model="orderForm.dName"
-                        autocomplete="off"
-                        disabled
-                    ></el-input>
+                    <el-input v-model="orderForm.dName" autocomplete="off" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="患者姓名" label-width="100px">
-                    <el-input
-                        v-model="orderForm.pName"
-                        autocomplete="off"
-                        disabled
-                    ></el-input>
+                    <el-input v-model="orderForm.pName" autocomplete="off" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="患者身份证号" label-width="100px">
-                    <el-input
-                        v-model="orderForm.pCard"
-                        autocomplete="off"
-                        disabled
-                    ></el-input>
+                    <el-input v-model="orderForm.pCard" autocomplete="off" disabled></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="orderFormVisible = false" style="font-size: 18px;"><i class="el-icon-close" style="font-size: 20px;"></i> 取 消</el-button>
-                <el-button type="primary" @click="orderSuccess('orderForm')"
-                    style="font-size: 18px;"><i class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button
-                >
+                <el-button @click="orderFormVisible = false" style="font-size: 18px;"><i class="el-icon-close"
+                        style="font-size: 20px;"></i> 取 消</el-button>
+                <el-button type="primary" @click="orderSuccess('orderForm')" style="font-size: 18px;"><i
+                        class="el-icon-check" style="font-size: 20px;"></i> 确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -178,7 +118,7 @@ export default {
         requestTime(id) {
             this.idTime = id + this.orderDate;
             request
-                .get("order/findOrderTime", {
+                .get("patient/findOrderTime", {
                     params: {
                         arId: this.idTime,
                     },
@@ -193,7 +133,7 @@ export default {
                     var array = [];
                     if (!this.isTimeAfterTarget("09:30") || !isToday) {
                         array.push(
-                            "08:30-09:30  " + "   余号 " + res.data.data.eTOn
+                            "00:01-09:30  " + "   余号 " + res.data.data.eTOn
                         );
                     }
                     if (!this.isTimeAfterTarget("10:30") || !isToday) {
@@ -216,9 +156,9 @@ export default {
                             "15:30-16:30  " + "   余号 " + res.data.data.fTOs
                         );
                     }
-                    if (!this.isTimeAfterTarget("17:30") || !isToday) {
+                    if (!this.isTimeAfterTarget("23:59") || !isToday) {
                         array.push(
-                            "16:30-17:30  " + "   余号 " + res.data.data.sTOs
+                            "16:30-23:59  " + "   余号 " + res.data.data.sTOs
                         );
                     }
                     this.times = array;
@@ -245,18 +185,18 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     request
-                        .get("patient/addOrder", {
-                            params: {
-                                pId: this.orderForm.pId,
-                                dId: this.orderForm.dId,
-                                oStart:
-                                    this.orderForm.orderDate +
-                                    " " +
-                                    this.orderForm.oTime,
-                                arId: this.idTime,
-                            },
+                        .post("patient/addOrder", {
+                            pId: this.userId,
+                            dId: this.orderForm.dId,
+                            oStart:
+                                this.orderForm.orderDate +
+                                " " +
+                                this.orderForm.oTime,
+                            arId: this.idTime,
                         })
                         .then((res) => {
+                            console.log(res.data);
+
                             if (res.data.status != 200)
                                 return this.$message.error(
                                     "该时间段无剩余号源！请重新选择！"
@@ -271,14 +211,12 @@ export default {
                 }
             });
         },
-        //token解码
-        tokenDecode(token) {
-            if (token !== null) return jwtDecode(token);
-        },
         //打开挂号对话框
         openClick(id, name) {
             this.orderForm.dId = id;
             this.orderForm.dName = name;
+            this.orderForm.pName = this.patientData.pName;
+            this.orderForm.pCard = this.patientData.pCard;
             this.orderFormVisible = true;
             //请求挂号时间段
             this.requestTime(id);
@@ -292,21 +230,15 @@ export default {
             let dateYear = year + "-" + date;
             this.orderDate = dateYear;
             request
-                .get("/arrange/findByTime", {
+                .get("/patient/findByTime", {
                     params: {
                         arTime: dateYear,
                         dSection: this.sectionOpt,
                     },
                 })
                 .then((res) => {
-                    //this.sectionData.dId = res.data.data.doctors.dId;
-                    /**
-                     * 重点！！！把数组中的对象取出来用map
-                     */
-                    this.sectionData = res.data.data.map((item) => item.doctor);
+                    this.sectionData = res.data;
                     this.clickTag = true;
-                    console.log(res.data.data.map((item) => item.doctor));
-                    //console.log(res.data.data[0].doctor);
                 });
         },
         //获取当天及后7天的日期星期
@@ -315,10 +247,10 @@ export default {
             var currentHour = nowDate.getHours();
             var currentMinute = nowDate.getMinutes();
 
-            // 判断当前时间是否已经过了17:30
+            // 判断当前时间是否已经过了23:59
             if (
-                currentHour > 17 ||
-                (currentHour === 17 && currentMinute > 30)
+                currentHour > 23 ||
+                (currentHour === 23 && currentMinute > 59)
             ) {
                 num++; // 次日
             }
@@ -350,6 +282,21 @@ export default {
                     console.log(res.data.data.doctors);
                 });
         },
+        //请求患者信息
+        requestPatient() {
+            request.get("patient/findPatientById", {
+                params: {
+                    pId: this.userId
+                }
+            })
+                .then(res => {
+                    if (res.data.status != 200)
+                        return this.$message.error("获取数据失败");
+                    this.patientData = res.data.data;
+                    console.log(this.patientData);
+
+                })
+        }
     },
     created() {
         //获取当天的后7天
@@ -358,11 +305,10 @@ export default {
         }
         //按科室请求医生信息
         this.requestSection();
-        // 解码token
-        this.orderForm.pName = this.tokenDecode(getToken()).pName;
-        this.orderForm.pCard = this.tokenDecode(getToken()).pCard;
-        this.orderForm.pId = this.tokenDecode(getToken()).pId;
-        //console.log(this.orderForm.pId)
+        //解码token信息
+        const token = getToken();
+        this.userId = jwtDecode(token).user_id;
+        this.requestPatient();
     },
 };
 </script>
@@ -372,17 +318,21 @@ export default {
     //margin: 5px;
     padding: 1px;
 }
+
 .dateUl {
     margin: 10px;
 }
+
 .el-breadcrumb {
     margin: 8px;
 }
+
 .head {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .el-form {
     margin-top: 0;
 }

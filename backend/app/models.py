@@ -73,7 +73,7 @@ class Doctor(db.Model):
             "dCard": self.d_card,
             "dPhone": self.d_phone,
             "dEmail": self.d_email,
-            "dAvgStar": self.d_star,
+            "dAvgStar": self.d_avg_star,
             "dPrice": self.d_price,
             "dIntroduction": self.d_introduction,
             "dState": self.d_state,
@@ -163,6 +163,23 @@ class Order(db.Model):
     o_price_state = db.Column(db.Integer, nullable=True)
     o_advice = db.Column(db.String(255), nullable=True)
     o_alipay = db.Column(db.String(255), nullable=True)
+
+    def to_dict(self):
+        return {
+            "oId": self.o_id,
+            "pId": self.p_id,
+            "dId": self.d_id,
+            "oRecord": self.o_record,
+            "oStart": self.o_start,
+            "oEnd": self.o_end,
+            "oState": self.o_state,
+            "oDrug": self.o_drug,
+            "oCheck": self.o_check,
+            "oTotalPrice": self.o_total_price,
+            "oPriceState": self.o_price_state,
+            "oAdvice": self.o_advice,
+            "oAlipay": self.o_alipay,
+        }
 
 
 # 与数据库表对应的排班类：

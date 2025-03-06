@@ -1,9 +1,5 @@
 <template>
   <div>
-    <!-- <div class="indexImage">
-    <img src="@/assets/hospital.jpeg" class="layoutImage"/>
-    <span>今天预约挂号总人数：{{orderPeople}}</span>
-  </div> -->
     <div class="indexPeople" style="margin-left: 550px">
       <div class="userImage">
         <i class="el-icon-user" style="font-size: 132px"></i>
@@ -30,36 +26,36 @@ import request from "@/utils/request.js";
 import jwtDecode from "jwt-decode";
 import { getToken } from "@/utils/storage.js";
 export default {
-    name: "DoctorLayout",
-    data() {
-        return {
-            userId: 1,
-            orderPeople: 1,
-        };
+  name: "DoctorLayout",
+  data() {
+    return {
+      userId: 1,
+      orderPeople: 1,
+    };
+  },
+  methods: {
+    //token解码
+    tokenDecode(token) {
+      if (token !== null) return jwtDecode(token);
     },
-    methods: {
-        //token解码
-        tokenDecode(token) {
-            if (token !== null) return jwtDecode(token);
-        },
-        requestPeople() {
-            request
-                .get("order/orderPeopleByDid", {
-                    params: {
-                        dId: this.userId,
-                    },
-                })
-                .then((res) => {
-                    if (res.data.status !== 200)
-                        return this.$message.error("数据请求失败");
-                    this.orderPeople = res.data.data;
-                });
-        },
+    requestPeople() {
+      request
+        .get("order/orderPeopleByDid", {
+          params: {
+            dId: this.userId,
+          },
+        })
+        .then((res) => {
+          if (res.data.status !== 200)
+            return this.$message.error("数据请求失败");
+          this.orderPeople = res.data.data;
+        });
     },
-    created() {
-        this.userId = this.tokenDecode(getToken()).dId;
-        this.requestPeople();
-    },
+  },
+  created() {
+    this.userId = this.tokenDecode(getToken()).dId;
+    this.requestPeople();
+  },
 };
 </script>
 <style lang="scss" scoped>
@@ -68,11 +64,13 @@ export default {
   width: 250px;
   float: right;
   color: white;
+
   .spanCure {
     font-size: 15px;
     margin-top: 60px;
     margin-bottom: 15px;
   }
+
   .spanPeople {
     font-size: 18px;
   }
@@ -88,6 +86,7 @@ export default {
   top: 10px;
   float: left;
 }
+
 .indexPeople {
   height: 200px;
   width: 440px;

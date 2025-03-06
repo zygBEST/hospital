@@ -1,58 +1,58 @@
 <template>
-<div>
-  <el-card>
-    <!-- <span>科室门诊</span> -->
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 内科</b></i>
-    <ul>
-      <li v-for="inter in inters" :key="inter">
-        <el-button style="margin: 5px;" @click="sectionClick(inter)">{{ inter }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 外科</b></i>
-    <ul>
-      <li v-for="out in outs" :key="out">
-        <el-button style="margin: 5px;" @click="sectionClick(out)">{{ out }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 妇产科</b></i>
-    <ul>
-      <li v-for="woman in women" :key="woman">
-        <el-button style="margin: 5px;" @click="sectionClick(woman)">{{ woman }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 儿科</b></i>
-    <ul>
-      <li v-for="kid in kids" :key="kid">
-        <el-button style="margin: 5px;" @click="sectionClick(kid)">{{ kid }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 五官科</b></i>
-    <ul>
-      <li v-for="five in fives" :key="five">
-        <el-button style="margin: 5px;" @click="sectionClick(five)">{{ five }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 中医科</b></i>
-    <ul>
-      <li v-for="chinese in chineses" :key="chinese">
-        <el-button style="margin: 5px;" @click="sectionClick(chinese)">{{ chinese }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-    <i class="el-icon-monitor" style="font-size: 22px;"><b> 其他</b></i>
-    <ul>
-      <li v-for="orther in orthers" :key="orther">
-        <el-button style="margin: 5px;" @click="sectionClick(orther)">{{ orther }}</el-button>
-      </li>
-    </ul>
-    <el-divider></el-divider>
-  </el-card>
+  <div>
+    <el-card>
+      <!-- <span>科室门诊</span> -->
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 内科</b></i>
+      <ul>
+        <li v-for="inter in inters" :key="inter">
+          <el-button style="margin: 5px;" @click="sectionClick(inter)">{{ inter }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 外科</b></i>
+      <ul>
+        <li v-for="out in outs" :key="out">
+          <el-button style="margin: 5px;" @click="sectionClick(out)">{{ out }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 妇产科</b></i>
+      <ul>
+        <li v-for="woman in women" :key="woman">
+          <el-button style="margin: 5px;" @click="sectionClick(woman)">{{ woman }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 儿科</b></i>
+      <ul>
+        <li v-for="kid in kids" :key="kid">
+          <el-button style="margin: 5px;" @click="sectionClick(kid)">{{ kid }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 五官科</b></i>
+      <ul>
+        <li v-for="five in fives" :key="five">
+          <el-button style="margin: 5px;" @click="sectionClick(five)">{{ five }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 中医科</b></i>
+      <ul>
+        <li v-for="chinese in chineses" :key="chinese">
+          <el-button style="margin: 5px;" @click="sectionClick(chinese)">{{ chinese }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+      <i class="el-icon-monitor" style="font-size: 22px;"><b> 其他</b></i>
+      <ul>
+        <li v-for="orther in orthers" :key="orther">
+          <el-button style="margin: 5px;" @click="sectionClick(orther)">{{ orther }}</el-button>
+        </li>
+      </ul>
+      <el-divider></el-divider>
+    </el-card>
   </div>
 </template>
 <script>
@@ -86,19 +86,22 @@ export default {
     };
   },
   methods: {
-      //科室点击
-        sectionClick(section){
-            this.$router.push({path: '/arrangeDoctor?section=' + section});
+    //科室点击
+    sectionClick(section) {
+      this.$router.push({ path: '/arrangeDoctor?section=' + section });
 
-        },
+    },
   },
 };
 </script>
 <style scoped lang="scss">
 ul li {
   display: inline;
-};
-.el-breadcrumb{
-  margin:8px;
+}
+
+;
+
+.el-breadcrumb {
+  margin: 8px;
 }
 </style>

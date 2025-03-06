@@ -1,9 +1,5 @@
 <template>
   <div>
-    <!-- <div class="indexImage">
-    <img src="@/assets/hospital.jpeg" class="layoutImage"/>
-    <span>今天预约挂号总人数：{{orderPeople}}</span>
-  </div> -->
     <div class="indexPeople" style="margin-left: 350px">
       <div class="userImage">
         <i class="el-icon-user" style="font-size: 132px"></i>
@@ -35,7 +31,7 @@
 
     <el-row>
       <el-col :span="24">
-        <img src="@/assets/16.png" style="width: 641px;margin-left: 490px;">
+        <img src="@/assets/19.png" style="width: 641px;margin-left: 490px;">
       </el-col>
     </el-row>
   </div>
@@ -53,7 +49,7 @@ export default {
     methods: {
         requestPeople() {
             request
-                .get("order/orderPeople")
+                .get("admin/orderPeople")
                 .then((res) => {
                     if (res.data.status !== 200)
                         return this.$message.error("数据请求失败");
@@ -65,7 +61,7 @@ export default {
         },
         requestBed() {
             request
-                .get("bed/bedPeople")
+                .get("admin/bedPeople")
                 .then((res) => {
                     if (res.data.status !== 200)
                         return this.$message.error("数据请求失败");

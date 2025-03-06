@@ -31,13 +31,16 @@ def create_app():
     from app.Login.routes import Login
     from app.Admin.doctor import doctorInfo
     from app.Admin.patient import patientInfo
-    from app.Doctor.doctorinfo import doctorinfo
-    from app.Patient.patientinfo import patientinfo
     from app.Admin.drug import drugInfo
     from app.Admin.checks import checks
     from app.Admin.index import indexinfo
     from app.Admin.bed import bedinfo
     from app.Admin.arrange import arrangeinfo
+    from app.Admin.order import orderinfo
+    from app.Doctor.doctorinfo import doctorinfo
+    from app.Patient.patientinfo import patientinfo
+    from app.Patient.appoint import appoint
+    from app.Patient.patientorder import patientorder
 
     # 将所有蓝图存入列表
     blueprints = [
@@ -51,6 +54,9 @@ def create_app():
         indexinfo,
         bedinfo,
         arrangeinfo,
+        appoint,
+        orderinfo,
+        patientorder,
     ]
 
     # 统一注册蓝图

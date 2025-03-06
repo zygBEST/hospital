@@ -5,118 +5,48 @@
         <el-row type="flex">
             <el-col :span="6">
                 <el-input v-model="query" placeholder="请输入患者id查询">
-                    <el-button
-                        slot="append"
-                        icon="el-icon-search"
-                        @click="requestOrders"
-                    ></el-button>
+                    <el-button slot="append" icon="el-icon-search" @click="requestOrders"></el-button>
                 </el-input>
             </el-col>
         </el-row>
         <!-- 表格 -->
         <el-table :data="orderData" stripe style="width: 100%" border>
-            <el-table-column
-                prop="oId"
-                label="挂号单号"
-                width="80px"
-            ></el-table-column>
-            <el-table-column
-                prop="pId"
-                label="患者id"
-                width="80px"
-            ></el-table-column>
+            <el-table-column prop="oId" label="挂号单号" width="80px"></el-table-column>
+            <el-table-column prop="pId" label="患者id" width="80px"></el-table-column>
 
             <el-table-column prop="dId" label="医生id" width="100px">
             </el-table-column>
 
-            <el-table-column
-                prop="oStart"
-                label="挂号时间"
-                width="180px"
-            ></el-table-column>
-            <el-table-column
-                prop="oEnd"
-                label="结束时间"
-                width="180px"
-            ></el-table-column>
-            <el-table-column
-                prop="oRecord"
-                label="病因"
-                width="400px"
-            ></el-table-column>
-            <el-table-column
-                prop="oDrug"
-                label="药物"
-                width="180px"
-            ></el-table-column>
-            <el-table-column
-                prop="oCheck"
-                label="检查项目"
-                width="180px"
-            ></el-table-column>
-            <el-table-column
-                prop="oTotalPrice"
-                label="费用/元"
-                width="80px"
-            ></el-table-column>
+            <el-table-column prop="oStart" label="挂号（就诊）时间" width="180px"></el-table-column>
+            <el-table-column prop="oEnd" label="结束时间" width="180px"></el-table-column>
+            <el-table-column prop="oRecord" label="病因" width="400px"></el-table-column>
+            <el-table-column prop="oDrug" label="药物" width="180px"></el-table-column>
+            <el-table-column prop="oCheck" label="检查项目" width="180px"></el-table-column>
+            <el-table-column prop="oTotalPrice" label="费用/元" width="80px"></el-table-column>
             <el-table-column prop="oPriceState" label="缴费状态" width="100px">
                 <template slot-scope="scope">
-                    <el-tag type="success" v-if="scope.row.oPriceState === 1"
-                        >已缴费</el-tag
-                    >
-                    <!-- <el-tag type="danger" v-if="scope.row.oPriceState === 0 && scope.row.oState === 1">未缴费</el-tag> -->
-                    <el-button
-                        type="danger"
-                        size="mini"
-                        v-if="
-                            scope.row.oPriceState === 0 &&
-                            scope.row.oState === 1
-                        "
-                        @click="priceClick(scope.row.oId)"
-                        >点击缴费</el-button
-                    >
+                    <el-tag type="success" v-if="scope.row.oPriceState === 1">已缴费</el-tag>
+                    <el-tag type="danger" v-if="scope.row.oPriceState === 0 &&scope.row.oState === 1">未缴费</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="oState" label="挂号状态" width="100px">
                 <template slot-scope="scope">
-                    <el-tag
-                        type="success"
-                        v-if="
-                            scope.row.oState === 1 &&
-                            scope.row.oPriceState === 1
-                        "
-                        >已完成</el-tag
-                    >
-                    <el-tag
-                        type="danger"
-                        v-if="scope.row.oState === 0 && scope.row.oState === 0"
-                        >未完成</el-tag
-                    >
+                    <el-tag type="success" v-if="scope.row.oState === 1 && scope.row.oPriceState === 1">已完成</el-tag>
+                    <el-tag type="danger" v-if="scope.row.oState === 0 && scope.row.oState === 0">未完成</el-tag>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="140" fixed="right">
                 <template slot-scope="scope">
-                    <el-button
-                        icon="el-icon-delete"
-                        style="font-size: 14px"
-                        type="danger"
-                        @click="deleteDialog(scope.row.oId)"
-                    ></el-button>
+                    <el-button icon="el-icon-delete" style="font-size: 14px" type="danger"
+                        @click="deleteDialog(scope.row.oId)"></el-button>
                 </template>
             </el-table-column>
         </el-table>
 
         <!-- 分页 -->
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            background
-            layout="total, sizes, prev, pager, next, jumper"
-            :current-page="pageNumber"
-            :page-size="size"
-            :page-sizes="[1, 2, 4, 8, 16]"
-            :total="total"
-        >
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" background
+            layout="total, sizes, prev, pager, next, jumper" :current-page="pageNumber" :page-size="size"
+            :page-sizes="[1, 2, 4, 8, 16]" :total="total">
         </el-pagination>
     </el-card>
 </template>
@@ -206,6 +136,7 @@ export default {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
 .el-form {
     margin-top: 0;
 }
