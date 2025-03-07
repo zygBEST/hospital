@@ -29,7 +29,7 @@
                             scope.row.oPriceState === 1
                         ">已完成</el-tag>
                         <el-tag type="danger" v-if="
-                            scope.row.oState === 0 && scope.row.oState === 0
+                            scope.row.oState === 0
                         ">未完成</el-tag>
                     </template>
                 </el-table-column>

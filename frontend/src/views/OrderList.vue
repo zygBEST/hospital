@@ -26,7 +26,7 @@
             <el-table-column prop="oPriceState" label="缴费状态" width="100px">
                 <template slot-scope="scope">
                     <el-tag type="success" v-if="scope.row.oPriceState === 1">已缴费</el-tag>
-                    <el-tag type="danger" v-if="scope.row.oPriceState === 0 &&scope.row.oState === 1">未缴费</el-tag>
+                    <el-tag type="danger" v-if="scope.row.oPriceState === 0 && scope.row.oState === 1">未缴费</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="oState" label="挂号状态" width="100px">

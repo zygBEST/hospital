@@ -1,11 +1,8 @@
 <template>
     <el-card>
         <el-table :data="orderData" stripe border>
-            <el-table-column
-            label="序号"
-      type="index"
-      width="50">
-    </el-table-column>
+            <el-table-column label="序号" type="index" width="50">
+            </el-table-column>
             <el-table-column label="挂号单号" prop="oId"></el-table-column>
             <el-table-column label="患者id" prop="pId"></el-table-column>
             <el-table-column label="患者姓名" prop="pName"></el-table-column>
@@ -15,17 +12,17 @@
                 <template slot-scope="scope">
                     <el-button type="warning" style="font-size: 18px" @click="dealClick(scope.row.oId, scope.row.pId)">
                         <i class="el-icon-monitor" style="font-size: 18px"></i>
-                         处理
+                        处理
                     </el-button>
                 </template>
             </el-table-column>
-            
+
         </el-table>
     </el-card>
 </template>
 <script>
 import jwtDecode from "jwt-decode";
-import { getToken} from "@/utils/storage.js";
+import { getToken } from "@/utils/storage.js";
 import request from "@/utils/request.js";
 export default {
     name: "orderToday",
@@ -35,13 +32,13 @@ export default {
             userName: "dada",
             today: "",
 
-            orderData:[],
-                
+            orderData: [],
+
         }
     },
     methods: {
         //挂号处理//页面跳转传值
-        dealClick(oId, pId){
+        dealClick(oId, pId) {
             this.$router.push(
                 {
                     path: "/dealOrder",
@@ -54,56 +51,52 @@ export default {
 
         },
         //获取挂号信息
-        requestOrder(){
-            request.get("doctor/findOrderByNull", {
+        requestOrder() {
+            request.get("doctor/findOrderByToday", {
                 params: {
                     dId: this.userId,
                     oStart: this.today
                 }
             })
-            .then(res => {
-                if(res.data.status != 200)
-                return this.$message.error("获取数据失败");
-               this.orderData = res.data.data;
-                //this.orderData.dName = this.userName;
-                console.log(res.data.data);
-                  
-            })
+                .then(res => {
+                    if (res.data.status != 200)
+                        return this.$message.error("获取数据失败");
+                    this.orderData = res.data.data;
+                    console.log(res.data.data);
+                })
         },
-    //token解码
-    tokenDecode(token){
-      if (token !== null)
-      return jwtDecode(token);
+        //token解码
+        tokenDecode(token) {
+            if (token !== null)
+                return jwtDecode(token);
+        },
+        //获取当天日期
+        nowDay() {
+            const nowDate = new Date();
+            let date = {
+                year: nowDate.getFullYear(),
+                month: nowDate.getMonth() + 1,
+                date: nowDate.getDate(),
+            };
+            if (date.date < 10) {
+                date.date = "0" + date.date
+            }
+            if (date.month < 10) {
+                date.month = "0" + date.month
+            }
+            this.today = date.year + "-" + date.month + "-" + date.date;
+
+        },
     },
-    //获取当天日期
-    nowDay(){
-        const nowDate = new Date();
-      let date = {
-        year: nowDate.getFullYear(),
-        month: nowDate.getMonth() + 1,
-        date: nowDate.getDate(),
-      };
-       if(date.date < 10){
-          date.date = "0"+ date.date
-      }
-      if(date.month < 10){
-        date.month = "0"+date.month
-      }
-      this.today = date.year+"-"+date.month+"-"+date.date;
-      
-    },
-    },
-    created(){
-        //解码token信息
-        this.userId = this.tokenDecode(getToken()).dId;
-        this.userName = this.tokenDecode(getToken()).dName;
+    created() {
+        const token = getToken(); // 获取 token
+        this.userId = jwtDecode(token).user_id;
         console.log(this.userId);
-        console.log(this.userName);
         //获取当天日期
         this.nowDay();
         //获取订单信息
         this.requestOrder();
-       
+
     },
 }
 </script>

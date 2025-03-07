@@ -2,7 +2,7 @@ import random
 import string
 from flask import Blueprint, jsonify, request
 import redis
-from ..models import Arrange, Doctor, Order
+from ..models import Arrange, Doctor, Order, OrderDetail, OrderItem
 from sqlalchemy.orm import joinedload
 from app import redis_client, db
 
@@ -132,11 +132,38 @@ def add_order():
         o_id=random_oid(p_id),
         p_id=p_id,
         d_id=d_id,
-        o_state=0,
-        o_price_state=0,
-        o_start=o_start[:22],  # 格式化时间
+        o_state=0,  # 默认订单状态
+        o_start=o_start[:22],  # 格式化时间，保留前22个字符
+        o_end=None,  # 结束时间
     )
+
+    # 将新订单添加到数据库
     db.session.add(new_order)
+
+    # 创建订单项，关联到订单
+    new_order_item = OrderItem(
+        o_id=new_order.o_id,  # 关联刚刚创建的订单
+        o_drug=None,  # 药品信息，根据实际情况添加
+        o_check=None,  # 检查项目，根据实际情况添加
+        o_total_price=0.00,  # 总价，根据实际计算
+        o_price_state=0,  # 默认费用支付状态
+        o_alipay=None,  # 支付宝交易信息，根据实际情况添加
+    )
+
+    # 将新订单项添加到数据库
+    db.session.add(new_order_item)
+
+    # 创建订单详情，关联到刚刚创建的订单
+    new_order_detail = OrderDetail(
+        o_id=new_order.o_id,  # 关联刚刚创建的订单
+        o_record=None,  # 病历记录，根据实际情况添加
+        o_advice=None,  # 医嘱，根据实际情况添加
+    )
+
+    # 将新订单详情添加到数据库
+    db.session.add(new_order_detail)
+
+    # 提交事务
     db.session.commit()
 
     return {"status": 200, "message": "挂号成功！"}

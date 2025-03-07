@@ -185,7 +185,6 @@ export default {
     // 解码token
     this.userName = this.tokenDecode(getToken()).dName;
     console.log(this.userName);
-
   }
 };
 </script>

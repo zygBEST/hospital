@@ -41,6 +41,8 @@ def create_app():
     from app.Patient.patientinfo import patientinfo
     from app.Patient.appoint import appoint
     from app.Patient.patientorder import patientorder
+    from app.Doctor.index import index_info
+    from app.Doctor.ordertoday import ordertoday
 
     # 将所有蓝图存入列表
     blueprints = [
@@ -57,6 +59,8 @@ def create_app():
         appoint,
         orderinfo,
         patientorder,
+        index_info,
+        ordertoday
     ]
 
     # 统一注册蓝图

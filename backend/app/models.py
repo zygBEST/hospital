@@ -151,33 +151,75 @@ class Order(db.Model):
     __tablename__ = "orders"
 
     o_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    p_id = db.Column(db.Integer, db.ForeignKey("patient.p_id"), nullable=True)
-    d_id = db.Column(db.Integer, db.ForeignKey("doctor.d_id"), nullable=True)
-    o_record = db.Column(db.String(255), nullable=True)
-    o_start = db.Column(db.String(255), nullable=True)
-    o_end = db.Column(db.String(255), nullable=True)
-    o_state = db.Column(db.Integer, nullable=True)
-    o_drug = db.Column(db.String(255), nullable=True)
-    o_check = db.Column(db.String(255), nullable=True)
-    o_total_price = db.Column(db.Numeric(10, 2), nullable=True)
-    o_price_state = db.Column(db.Integer, nullable=True)
-    o_advice = db.Column(db.String(255), nullable=True)
-    o_alipay = db.Column(db.String(255), nullable=True)
+    p_id = db.Column(
+        db.Integer, db.ForeignKey("patient.p_id"), nullable=False
+    )  # 关联患者
+    d_id = db.Column(
+        db.Integer, db.ForeignKey("doctor.d_id"), nullable=False
+    )  # 关联医生
+    o_start = db.Column(db.String(255), nullable=False)  # 预约开始时间
+    o_end = db.Column(db.String(255), nullable=False)  # 预约结束时间
+    o_state = db.Column(db.Integer, nullable=False)  # 订单状态
+
+
+    # 关联 order_details 和 order_items
+    details = db.relationship("OrderDetail", backref="order", lazy=True)
+    items = db.relationship("OrderItem", backref="order", lazy=True)
 
     def to_dict(self):
         return {
             "oId": self.o_id,
             "pId": self.p_id,
             "dId": self.d_id,
-            "oRecord": self.o_record,
             "oStart": self.o_start,
             "oEnd": self.o_end,
             "oState": self.o_state,
+        }
+
+
+# 订单详情表
+class OrderDetail(db.Model):
+    __tablename__ = "order_details"
+
+    od_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    o_id = db.Column(
+        db.Integer, db.ForeignKey("orders.o_id"), nullable=False
+    )  # 关联 orders
+    o_record = db.Column(db.String(255), nullable=True)  # 病历记录
+    o_advice = db.Column(db.String(255), nullable=True)  # 医嘱
+
+    def to_dict(self):
+        return {
+            "odId": self.od_id,
+            "oId": self.o_id,
+            "oRecord": self.o_record,
+            "oAdvice": self.o_advice,
+        }
+
+
+# 订单项（检查、药品等）
+class OrderItem(db.Model):
+    __tablename__ = "order_items"
+
+    oi_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    o_id = db.Column(
+        db.Integer, db.ForeignKey("orders.o_id"), nullable=False
+    )  # 关联 orders
+    o_drug = db.Column(db.String(255), nullable=True)  # 药品信息
+    o_check = db.Column(db.String(255), nullable=True)  # 检查项目
+    o_total_price = db.Column(db.Numeric(10, 2), nullable=True)  # 订单总价
+    o_price_state = db.Column(db.Integer, nullable=True)  # 费用支付状态
+    o_alipay = db.Column(db.String(255), nullable=True)  # 支付宝交易信息
+    
+
+    def to_dict(self):
+        return {
+            "oiId": self.oi_id,
+            "oId": self.o_id,
             "oDrug": self.o_drug,
             "oCheck": self.o_check,
             "oTotalPrice": self.o_total_price,
             "oPriceState": self.o_price_state,
-            "oAdvice": self.o_advice,
             "oAlipay": self.o_alipay,
         }
 

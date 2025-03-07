@@ -34,17 +34,14 @@ export default {
     };
   },
   methods: {
-    //token解码
-    tokenDecode(token) {
-      if (token !== null) return jwtDecode(token);
-    },
     requestPeople() {
       request
-        .get("order/orderPeopleByDid", {
+        .get("doctor/orderPeopleByDid", {
           params: {
             dId: this.userId,
           },
         })
+
         .then((res) => {
           if (res.data.status !== 200)
             return this.$message.error("数据请求失败");
@@ -53,7 +50,9 @@ export default {
     },
   },
   created() {
-    this.userId = this.tokenDecode(getToken()).dId;
+    const token = getToken(); // 获取 token
+    this.userId = jwtDecode(token).user_id;
+    console.log(this.userId);
     this.requestPeople();
   },
 };
