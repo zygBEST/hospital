@@ -1,6 +1,7 @@
 # 创建历史挂号蓝图对象
 from datetime import datetime
 from flask import Blueprint, jsonify, request
+from sqlalchemy import or_
 from app.models import Order, OrderDetail, OrderItem, Patient
 from app import db
 from app.Patient.appoint import random_oid
@@ -14,6 +15,8 @@ def find_order_by_did():
     d_id = request.args.get("dId", type=int)
     if not d_id:
         return jsonify({"status": 400, "msg": "缺少 dId 参数"})
+    
+    today = datetime.now().strftime("%Y-%m-%d")
 
     orders = (
         db.session.query(Order, Patient, OrderDetail, OrderItem)
@@ -21,6 +24,7 @@ def find_order_by_did():
         .join(OrderDetail, Order.o_id == OrderDetail.o_id)  # 关联订单详情表
         .join(OrderItem, Order.o_id == OrderItem.o_id)  # 关联订单项目表
         .filter(Order.d_id == d_id)
+        .filter(or_(Order.o_state == 1, Order.o_end < today))
         .order_by(Order.o_end.desc())
         .all()
     )
@@ -67,11 +71,12 @@ def update_order_by_add():
     order_detail.o_advice = o_advice
 
      # 更新订单项 OrderItem
-    order_item.o_drug = o_drug
-    order_item.o_check = o_check
-    order_item.o_total_price = o_total_price
-    order_item.o_price_state = 0
-    order_item.o_alipay = "UNPAID"
+    if order_item:  # 确保 order_item 不是 None
+        order_item.o_drug = (order_item.o_drug or "") + (o_drug or "")
+        order_item.o_check = (order_item.o_check or "") + (o_check or "")
+        order_item.o_total_price = o_total_price
+        order_item.o_price_state = 0
+        order_item.o_alipay = "UNPAID"
 
     # 更新订单id以支持支付宝支付
     order.o_id = random_oid(order.o_id)
@@ -80,19 +85,3 @@ def update_order_by_add():
     db.session.commit()
 
     return jsonify({"status": 200, "message": "订单更新成功"})
-
-
-# # 判断诊断之后再次购买药物是否已缴费
-# @orderhistory.route("/doctor/findTotalPrice", methods=["GET"])
-# def find_total_price():
-#     o_id = request.args.get("oId")
-#     if not o_id:
-#         return jsonify({"status": 400, "msg": "缺少 oId 参数"})
-
-#     order_item = OrderItem.query.filter_by(o_id=o_id).first()
-#     # 如果不是0，说明没有缴费，0为未缴费状态
-#     if order_item.o_price_state != 0.00:
-        
-
-#     db.session.commit()
-#     return jsonify({"status": 200, "msg": "查询成功", "data": order_item.o_total_price})

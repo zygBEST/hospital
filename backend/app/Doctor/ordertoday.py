@@ -19,6 +19,7 @@ def findOrderByToday():
         .join(Patient, Order.p_id == Patient.p_id)  # 连接 Patient 表，获取 p_name
         .join(Doctor, Order.d_id == Doctor.d_id)  # 连接 Doctor 表，获取 d_name
         .filter(Order.d_id == d_id)  # 根据 d_id 过滤
+        .filter(Order.o_state == 0)
         .filter(Order.o_start.like(f"{today}%"))  # 根据 o_start 过滤，确保是当天的订单
         .all()  # 执行查询
     )
