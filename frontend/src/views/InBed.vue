@@ -40,9 +40,7 @@
                             icon="iconfont icon-r-home"
                             style="font-size: 14px"
                             @click="BedDiag(scope.row.pId, scope.row.dId)"
-                        >
-                            申请住院</el-button
-                        >
+                        >申请住院</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -120,13 +118,11 @@ export default {
         //点击申请床位确认按钮
         bedClick() {
             request
-                .get("bed/updateBed", {
-                    params: {
+                .post("doctor/updateBed", {
                         bId: this.bedForm.bId,
                         dId: this.bedForm.dId,
                         pId: this.bedForm.pId,
                         bReason: this.bedForm.bReason,
-                    },
                 })
                 .then((res) => {
                     if (res.data.status !== 200)
@@ -141,7 +137,7 @@ export default {
         //请求所有空床位
         requestBeds() {
             request
-                .get("bed/findNullBed")
+                .get("doctor/findNullBed")
                 .then((res) => {
                     if (res.data.status !== 200)
                         return this.$message.error("数据请求失败");
@@ -156,6 +152,7 @@ export default {
         BedDiag(pId, dId) {
             this.bedForm.pId = pId;
             this.bedForm.dId = dId;
+            this.bedForm = Object.assign({}, this.bedForm, { bReason: "", bId: "" });
             this.BedFormVisible = true;
             this.requestBeds();
         },
@@ -174,7 +171,7 @@ export default {
         //获取已完成的订单信息
         requestOrders() {
             request
-                .get("order/findOrderFinish", {
+                .get("doctor/findOrderFinish", {
                     params: {
                         dId: this.userId,
                         pageNumber: this.pageNumber,
@@ -185,7 +182,9 @@ export default {
                 .then((res) => {
                     if (res.data.status !== 200)
                         return this.$message.error("数据请求失败");
-                    this.orderData = res.data.data.orders;
+                    console.log(res.data);
+                    
+                    this.orderData = res.data.data.data;
                     this.total = res.data.data.total;
                 });
         },
@@ -196,10 +195,9 @@ export default {
     },
     created() {
         //解码token信息
-        this.userId = this.tokenDecode(getToken()).dId;
-        this.userName = this.tokenDecode(getToken()).dName;
+        const token = getToken();
+        this.userId = jwtDecode(token).user_id;
         console.log(this.userId);
-        console.log(this.userName);
         //获取订单信息
         this.requestOrders();
     },

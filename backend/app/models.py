@@ -128,7 +128,7 @@ class Bed(db.Model):
     b_start = db.Column(db.String(255), nullable=True)
     d_id = db.Column(db.Integer, db.ForeignKey("doctor.d_id"), nullable=True)
     b_reason = db.Column(db.String(255), nullable=True)
-    version = db.Column(db.Integer, nullable=True)
+    b_end = db.Column(db.String(255), nullable=True)
 
     # 关联 patient 和 doctor
     patient = db.relationship("Patient", backref="beds", foreign_keys=[p_id])
@@ -142,7 +142,30 @@ class Bed(db.Model):
             "bStart": self.b_start,
             "dId": self.d_id,
             "bReason": self.b_reason,
-            "version": self.version,
+            "bEnd": self.b_end,
+        }
+
+# 与数据库表对应的患者床号类：
+class PBed(db.Model):
+    __tablename__ = 'p_bed'
+
+    pb_id = db.Column(db.Integer, primary_key=True)  # 主键
+    b_id = db.Column(db.Integer, nullable=True)  # 床位ID
+    p_id = db.Column(db.Integer, nullable=True)  # 患者ID
+    d_id = db.Column(db.Integer, nullable=True)  # 医生ID
+    b_reason = db.Column(db.String(255), nullable=True)
+    b_start = db.Column(db.String(255), nullable=True)  # 入住时间
+    b_end = db.Column(db.String(255), nullable=True)  # 出院时间
+
+    def to_dict(self):
+        return {
+            "pbId": self.pb_id,
+            "bId": self.b_id,
+            "pId": self.p_id,
+            "dId": self.d_id,
+            "bReason": self.b_reason,
+            "bStart": self.b_start,
+            "bEnd": self.b_end,
         }
 
 

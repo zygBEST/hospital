@@ -7,6 +7,7 @@
                 <el-table-column label="医生id" prop="dId" v-model="bedData.dId"></el-table-column>
                 <el-table-column label="原因" prop="bReason" v-model="bedData.bReason"></el-table-column>
                 <el-table-column label="开始时间" prop="bStart" v-model="bedData.bStart"></el-table-column>
+                <el-table-column label="结束时间" prop="bEnd" v-model="bedData.bEnd"></el-table-column>
             </el-table>
         </el-card>
     </div>
@@ -26,29 +27,25 @@ export default {
     methods: {
         //请求病床信息
         requestBed(){
-            request.get("bed/findBedByPid", {
+            request.get("patient/findBedByPid", {
                 params: {
                     pId: this.userId
                 }
             })
             .then(res => {
                 if(res.data.status !== 200)
-                return this.$message.error("请求数据失败");
+                    return this.$message.error("请求数据失败");
+                console.log(res.data.data);
                 this.bedData = res.data.data;
             })
 
         },
-           //token解码
-    tokenDecode(token){
-      if (token !== null)
-      return jwtDecode(token);
-    },
-
     },
     created(){
-           // 解码token
-            this.userId = this.tokenDecode(getToken()).pId;
-            this.requestBed();
+        //解码token信息
+        const token = getToken();
+        this.userId = jwtDecode(token).user_id;
+        this.requestBed();
     }
 }
 </script>

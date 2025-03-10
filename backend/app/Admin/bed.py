@@ -1,5 +1,6 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
-from app.models import Bed
+from app.models import Bed, PBed
 from app import db
 
 # 创建病床信息管理蓝图对象
@@ -39,9 +40,13 @@ def clear_beds():
 
     bed.p_id = -1
     bed.d_id = -1
-    bed.b_reason = None
     bed.b_start = None
+    bed.b_reason = None
     bed.b_state = 0
+
+    p_bed = PBed.query.filter(PBed.b_id == b_id).first()
+    p_bed.b_end = datetime.now().strftime("%Y-%m-%d %H:%M")
+    bed.b_end = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     db.session.commit()
     return jsonify({"status": 200, "message": "清空成功"})

@@ -61,7 +61,7 @@ export default {
     },
     requestBed() {
       request
-        .get("bed/bedPeople")
+        .get("admin/bedPeople")
         .then((res) => {
           if (res.data.status !== 200)
             return this.$message.error("数据请求失败");
