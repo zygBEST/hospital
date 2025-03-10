@@ -92,10 +92,9 @@ export default {
       })
         .then(res => {
           if (res.data.status !== 200) {
-            console.log(res.data);
-            
             return this.$message.error("获取用户信息失败");
           }
+          console.log(res.data);
           this.userName = res.data.data.userName; // 设置用户名
         })
         .catch(err => {
@@ -182,9 +181,6 @@ export default {
   created() {
     //  获取激活路径
     this.activePath = getActivePath();
-    // 解码token
-    this.userName = this.tokenDecode(getToken()).dName;
-    console.log(this.userName);
   }
 };
 </script>

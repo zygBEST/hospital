@@ -95,7 +95,7 @@ class Drug(db.Model):
         return {
             "drId": self.dr_id,
             "drName": self.dr_name,
-            "drPrice": float(self.dr_price) if self.dr_price else None,
+            "drPrice": round(float(self.dr_price),2) if self.dr_price else None,
             "drNumber": self.dr_number,
             "drPublisher": self.dr_publisher,
             "drUnit": self.dr_unit,
@@ -114,7 +114,7 @@ class CheckItem(db.Model):
         return {
             "chId": self.ch_id,
             "chName": self.ch_name,
-            "chPrice": str(self.ch_price),
+            "chPrice": round(float(self.ch_price), 2) if self.ch_price is not None else None,
         }
 
 

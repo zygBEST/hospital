@@ -3,25 +3,12 @@
     <el-card>
       <el-row>
         <el-col :span="7">
-          挂号单号：<el-input
-            disabled
-            v-model="oId"
-            class="orderInput"
-          ></el-input>
+          挂号单号：<el-input disabled v-model="oId" class="orderInput"></el-input>
         </el-col>
         <el-col :span="7">
-          患者账号：<el-input
-            disabled
-            v-model="pId"
-            class="orderInput"
-          ></el-input
-        ></el-col>
+          患者账号：<el-input disabled v-model="pId" class="orderInput"></el-input></el-col>
         <el-col :span="7">
-          患者姓名：<el-input
-            disabled
-            v-model="pName"
-            class="orderInput"
-          ></el-input>
+          患者姓名：<el-input disabled v-model="pName" class="orderInput"></el-input>
         </el-col>
         <el-col :span="3">
           <el-button type="success" @click="submitClick">提交</el-button>
@@ -29,25 +16,12 @@
       </el-row>
       <el-row>
         <el-col :span="7">
-          患者性别：<el-input
-            disabled
-            v-model="pGender"
-            class="orderInput"
-          ></el-input>
+          患者性别：<el-input disabled v-model="pGender" class="orderInput"></el-input>
         </el-col>
         <el-col :span="7">
-          联系方式：<el-input
-            disabled
-            v-model="pPhone"
-            class="orderInput"
-          ></el-input
-        ></el-col>
+          联系方式：<el-input disabled v-model="pPhone" class="orderInput"></el-input></el-col>
         <el-col :span="7">
-          医生姓名：<el-input
-            disabled
-            v-model="dName"
-            class="orderInput"
-          ></el-input>
+          医生姓名：<el-input disabled v-model="dName" class="orderInput"></el-input>
         </el-col>
         <el-col :span="3">
           <el-button type="success" @click="openReason">病因编写</el-button>
@@ -56,16 +30,8 @@
       <!-- 药物表格 -->
       <el-row>
         <el-col :span="12">
-          <el-input
-            v-model="queryDrug"
-            placeholder="请输入名称查询"
-            class="drugInput"
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="requestDrug"
-            ></el-button>
+          <el-input v-model="queryDrug" placeholder="请输入名称查询" class="drugInput">
+            <el-button slot="append" icon="el-icon-search" @click="requestDrug"></el-button>
           </el-input>
           <el-table :data="drugData" stripe border>
             <el-table-column label="编号" prop="drId"></el-table-column>
@@ -75,27 +41,15 @@
             <el-table-column label="单价" prop="drPrice"></el-table-column>
             <el-table-column label="操作" width="120" fixed="right">
               <template slot-scope="scope">
-                <el-button
-                  type="success"
-                  style="font-size: 14px;"
-                  @click="addDrug(scope.row.drId)"
-                  >
+                <el-button type="success" style="font-size: 14px;" @click="addDrug(scope.row.drId)">
                   <i class="el-icon-circle-plus-outline" style="font-size: 16px;"></i>
-                  增加</el-button
-                >
+                  增加</el-button>
               </template>
             </el-table-column>
           </el-table>
           <!-- 分页 -->
-          <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            background
-            layout="total, sizes, prev, pager, next"
-            :total="total"
-            :page-size="size"
-            :page-sizes="[1, 2, 4, 8, 16]"
-          >
+          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" background
+            layout="total, sizes, prev, pager, next" :total="total" :page-size="size" :page-sizes="[1, 2, 4, 8, 16]">
           </el-pagination>
           <el-row></el-row>
         </el-col>
@@ -109,33 +63,19 @@
             <el-table-column label="小记" prop="drSum"></el-table-column>
             <el-table-column label="操作" width="120" fixed="right">
               <template slot-scope="scope">
-                <el-button
-                  type="danger"
-                  
-                  style="font-size: 14px;"
-                  icon="el-icon-delete"
-                  @click="deleteDrug(scope.row.drId)"
-                  > 移除</el-button
-                >
+                <el-button type="danger" style="font-size: 14px;" icon="el-icon-delete"
+                  @click="deleteDrug(scope.row.drId)"> 移除</el-button>
               </template>
             </el-table-column>
           </el-table>
-          <el-tag>共计：{{ drugTotalPrice }}元</el-tag>
+          <el-tag>共计：{{ drugTotalPrice.toFixed(2) }}元</el-tag>
         </el-col>
       </el-row>
-      <!-- 检查项目编写 -->
+      <!-- 检查项目表格 -->
       <el-row>
         <el-col :span="12">
-          <el-input
-            v-model="queryCheck"
-            placeholder="请输入名称查询"
-            class="drugInput"
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="requestCheck"
-            ></el-button>
+          <el-input v-model="queryCheck" placeholder="请输入名称查询" class="drugInput">
+            <el-button slot="append" icon="el-icon-search" @click="requestCheck"></el-button>
           </el-input>
           <el-table stripe border :data="checkData">
             <el-table-column label="编号" prop="chId"></el-table-column>
@@ -143,25 +83,14 @@
             <el-table-column label="价格" prop="chPrice"></el-table-column>
             <el-table-column label="操作" width="120" fixed="right">
               <template slot-scope="scope">
-                <el-button
-                  type="success"
-                  style="font-size: 14px;"
-                  icon="el-icon-circle-plus-outline"
-                  @click="addCheck(scope.row.chId)"
-                  > 增加</el-button
-                >
+                <el-button type="success" style="font-size: 14px;" icon="el-icon-circle-plus-outline"
+                  @click="addCheck(scope.row.chId)"> 增加</el-button>
               </template>
             </el-table-column>
           </el-table>
           <!-- 分页 -->
-          <el-pagination
-            @size-change="checkSizeChange"
-            @current-change="checkCurrentChange"
-            background
-            layout="total, prev, pager, next"
-            :total="checkTotal"
-            :page-size="checkSize"
-          >
+          <el-pagination @size-change="checkSizeChange" @current-change="checkCurrentChange" background
+            layout="total, prev, pager, next" :total="checkTotal" :page-size="checkSize">
           </el-pagination>
         </el-col>
         <!-- 右边已选择的检查 -->
@@ -172,32 +101,23 @@
             <el-table-column label="价格" prop="chPrice"></el-table-column>
             <el-table-column label="操作" width="120" fixed="right">
               <template slot-scope="scope">
-                <el-button
-                  type="danger"
-                  style="font-size: 14px;"
-                  icon="el-icon-delete"
-                  @click="deleteCheck(scope.row.chId)"
-                  > 移除</el-button
-                >
+                <el-button type="danger" style="font-size: 14px;" icon="el-icon-delete"
+                  @click="deleteCheck(scope.row.chId)"> 移除</el-button>
               </template>
             </el-table-column>
           </el-table>
-          <el-tag>共计：{{ checkTotalPrice }}元</el-tag>
+          <el-tag>共计：{{ checkTotalPrice.toFixed(2) }}元</el-tag>
         </el-col>
       </el-row>
     </el-card>
 
     <!-- 病因编写对话框 -->
     <el-dialog title="病因编写" :visible.sync="reasonFormVisible">
-      <el-input
-        type="textarea"
-        :rows="8"
-        placeholder="请输入内容"
-        v-model="reason"
-      >
+      <el-input type="textarea" :rows="8" placeholder="请输入内容" v-model="reason">
       </el-input>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="reasonFormVisible = false" style="font-size: 18px;"><i class="el-icon-close" style="font-size: 20px;"></i> 取 消</el-button>
+        <el-button @click="reasonFormVisible = false" style="font-size: 18px;"><i class="el-icon-close"
+            style="font-size: 20px;"></i> 取 消</el-button>
         <el-button type="primary" @click="holdReason">保存</el-button>
       </div>
     </el-dialog>
@@ -214,9 +134,9 @@ export default {
       oId: 1,
       pId: 1,
       dId: 0,
-      pName: "aa",
-      pGender: "as",
-      pPhone: "asd",
+      pName: "1",
+      pGender: "1",
+      pPhone: "1",
       dName: "",
       drugData: [],
       size: 4,
@@ -239,7 +159,31 @@ export default {
       reasonFormVisible: false,
     };
   },
+  mounted() {
+    this.getUserInfo();// 页面加载时获取用户信息
+  },
   methods: {
+    getUserInfo() {
+      const token = getToken(); // 获取 token
+      if (!token) {
+        return this.$message.error("请先登录！");
+      }
+
+      request.get("/getUserInfo", {
+        headers: { Authorization: `Bearer ${token}` } // 在请求头中携带 token
+      })
+        .then(res => {
+          if (res.data.status !== 200) {
+            return this.$message.error("获取用户信息失败");
+          }
+          console.log(res.data);
+          this.dName = res.data.data.userName; // 设置用户名
+        })
+        .catch(err => {
+          console.error(err);
+          this.$message.error("获取用户信息失败");
+        });
+    },
     //根据id减少药物数量
     reduceDrugNumber(drId, usedNumber) {
       request
@@ -273,7 +217,7 @@ export default {
         oTotalPrice: this.dataPackage().oTotalPrice,
       };
       request
-        .post("order/updateOrder", data)
+        .post("doctor/updateOrder", data)
         .then((res) => {
           if (res.data.status !== 200) {
             this.$message.error("请求信息错误");
@@ -311,7 +255,7 @@ export default {
           "(元) ";
       }
       oCheck += " 项目总价" + this.checkTotalPrice + "元 ";
-      oDrug += " 药物总价" + this.drugTotalPrice + "元 ";
+      oDrug += " 药物总价" + this.drugTotalPrice.toFixed(2) + "元 ";
       oTotalPrice = this.checkTotalPrice + this.drugTotalPrice;
       return { oId, oRecord, oDrug, oCheck, oTotalPrice };
     },
@@ -328,18 +272,16 @@ export default {
     deleteCheck(chId) {
       for (let i = 0; i < this.checkBuyData.length; i++) {
         if (this.checkBuyData[i].chId === chId) {
-          this.checkTotalPrice -= this.checkBuyData[i].chPrice; //药物价格总计
-          this.checkBuyData.splice(i, 1); //！！！！！！删除数组中下标为i的元素
+          this.checkTotalPrice -= this.checkBuyData[i].chPrice; //检查项目价格总计
+          this.checkBuyData.splice(i, 1);
         }
       }
     },
     //检查列表点击增加按钮
     addCheck(chId) {
       request
-        .get("check/findCheck", {
-          params: {
-            chId: chId,
-          },
+        .post("admin/findCheck", {
+          chId: chId,
         })
         .then((res) => {
           if (res.data.status != 200) return this.$message.error("信息请求失败");
@@ -349,8 +291,7 @@ export default {
             chPrice: res.data.data.chPrice,
             chName: res.data.data.chName,
           });
-          this.checkTotalPrice += res.data.data.chPrice; //药物价格总计
-          console.log(res.data.data);
+          this.checkTotalPrice = Math.round((this.checkTotalPrice + res.data.data.chPrice) * 100) / 100; //检查项目价格总计
         });
     },
     //药物页面大小切换时触发
@@ -366,7 +307,7 @@ export default {
     //请求检查项目
     requestCheck() {
       request
-        .get("check/findAllChecks", {
+        .get("admin/findAllChecks", {
           params: {
             size: this.checkSize,
             pageNumber: this.checkPageNumber,
@@ -374,7 +315,7 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.status != 200) this.$message.error("获取信息失败");
+          if (res.status != 200) this.$message.error("获取信息失败");
           this.checkData = res.data.data.checks;
           this.checkTotal = res.data.data.total;
           console.log(res);
@@ -392,19 +333,18 @@ export default {
           }
           this.drugBuyData[i].drNum -= 1;
           this.drugBuyData[i].drSum =
-            this.drugBuyData[i].drPrice * this.drugBuyData[i].drNum;
+            Math.round(this.drugBuyData[i].drPrice * 100 * this.drugBuyData[i].drNum) / 100;
+
           this.drugTotalPrice -= this.drugBuyData[i].drPrice; //药物价格总计
-          if (this.drugBuyData[i].drNum === 0) this.drugBuyData.splice(i, 1); //！！！！！！删除数组中下标为i的元素
+          if (this.drugBuyData[i].drNum === 0) this.drugBuyData.splice(i, 1);
         }
       }
     },
     //药物列表点击增加按钮
     addDrug(drId) {
       request
-        .get("drug/findDrug", {
-          params: {
-            drId: drId,
-          },
+        .post("admin/findDrug", {
+          drId: drId,
         })
         .then((res) => {
           if (res.data.status != 200) return this.$message.error("信息请求失败");
@@ -419,9 +359,8 @@ export default {
                   this.drugData[j].drNumber -= 1;
                   this.drugBuyData[i].drNum += 1;
                   this.drugBuyData[i].drSum =
-                    this.drugBuyData[i].drPrice * this.drugBuyData[i].drNum;
+                    Math.round(this.drugBuyData[i].drPrice * this.drugBuyData[i].drNum * 100) / 100;
                   this.drugTotalPrice += this.drugBuyData[i].drPrice; //药物价格总计
-                  //return;
                 }
               }
               return;
@@ -445,9 +384,7 @@ export default {
             if (this.drugData[j].drId === res.data.data.drId)
               this.drugData[j].drNumber -= 1;
           }
-          this.drugTotalPrice += res.data.data.drPrice; //药物价格总计
-
-          console.log(res.data.data);
+          this.drugTotalPrice = Math.round((this.drugTotalPrice + res.data.data.drPrice) * 100) / 100; //药物价格总计
         });
     },
     //药物页面大小切换时触发
@@ -464,7 +401,7 @@ export default {
     //获取药物列表
     requestDrug() {
       request
-        .get("drug/findAllDrugs", {
+        .get("admin/findAllDrugs", {
           params: {
             size: this.size,
             pageNumber: this.pageNumber,
@@ -472,17 +409,15 @@ export default {
           },
         })
         .then((res) => {
-          if (res.data.status != 200) this.$message.error("获取信息失败");
+          if (res.status != 200) this.$message.error("获取信息失败");
           this.drugData = res.data.data.drugs;
           this.total = res.data.data.total;
-
-          console.log(res);
         });
     },
     //获取患者信息
     requestPatient() {
       request
-        .get("doctor/findPatientById", {
+        .get("patient/findPatientById", {
           params: {
             pId: this.pId,
           },
@@ -501,7 +436,6 @@ export default {
     },
   },
   created() {
-    this.dName = this.tokenDecode(getToken()).dName;
     this.dId = this.tokenDecode(getToken()).dId;
     this.oId = this.$route.query.oId;
     this.pId = this.$route.query.pId;
@@ -516,23 +450,29 @@ export default {
 .drugRigth {
   text-align: center;
 }
+
 .el-tag {
   margin: 8px;
 }
+
 .rigthTable {
   margin-top: 56px;
   margin-left: 8px;
 }
+
 .drugInput {
   margin-top: 8px;
   margin-bottom: 8px;
 }
+
 .el-row {
   margin: 5px;
 }
+
 .orderInput {
   width: 240px;
 }
+
 .el-pagination {
   margin: 8px;
 }

@@ -18,7 +18,7 @@
                         <el-button type="warning" icon="iconfont icon-r-mark1" style="font-size: 14px" v-if="
                             scope.row.oPriceState === 0 &&
                             scope.row.oState === 1
-                        " @click="priceClick(scope.row.oId, scope.row.dId)">
+                        " @click="priceClick(scope.row.oId, scope.row.dId,scope.row.oTotalPrice, scope.row.pName)">
                             点击缴费</el-button>
                     </template>
                 </el-table-column>
@@ -101,38 +101,70 @@ export default {
         //查看报告单
         seeReport(id) {
             window.location.href =
-                "http://localhost:9999/patient/pdf?oId=" + id;
+                "http://localhost:5000/patient/pdf?oId=" + id;
         },
         //点击缴费按钮
-        priceClick(oId, dId) {
+        priceClick(oId, dId, oTotalPrice, pName) {
+            // 构造支付链接并重定向
+            const payUrl = `http://localhost:5000/alipay/pay?subject=${pName}就诊费用&tradeNo=${oId}&totalAmount=${oTotalPrice}`;
+            window.open(payUrl, '_blank', 'width=800,height=600');
+
+            // 设置轮询
+            const pollInterval = 3000; // 每3秒查询一次状态
+            const pollOrderStatus = setInterval(() => {
+                request
+                    .get("order/status", {
+                        params: {
+                            oId: oId,
+                        },
+                    })
+                    .then((res) => {
+                        console.log(res.data.message);
+                        if (res.data.message === "PAID") {
+                            clearInterval(pollOrderStatus); // 停止轮询
+                            this.$message.success("支付成功！");
+                            // 调用其他后续接口，例如更新订单状态和医生信息
+                            this.findDoctor(dId, oId);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("查询订单状态出错:", error);
+                    });
+            }, pollInterval);
+        },
+
+        // updateOrderStatus(oId, dId) {
+        //     request
+        //         .get("order/updatePrice", {
+        //             params: { oId: oId },
+        //         })
+        //         .then((res) => {
+        //             if (res.data.status === 200) {
+        //                 this.$message.success("订单状态更新成功！");
+        //                 this.findDoctor(dId, oId);
+        //             } else {
+        //                 this.$message.error("更新订单状态失败!");
+        //             }
+        //         });
+        // },
+
+        findDoctor(dId, oId) {
             request
-                .get("order/updatePrice", {
-                    params: {
-                        oId: oId,
-                    },
+                .get("doctor/findDoctorById", {
+                    params: { dId: dId },
                 })
                 .then((res) => {
-                    if (res.data.status !== 200) {
-                        this.$message.error("请求数据失败");
-                        return;
+                    if (res.data.status === 200) {
+                        this.dId = res.data.data.dId;
+                        this.dName = res.data.data.dName;
+                        this.starVisible = true; // 显示评价对话框
+                        this.requestOrder();  // 刷新订单信息
+                    } else {
+                        this.$message.error("请求医生数据失败");
                     }
-                    this.$message.success("单号 " + oId + " 缴费成功！");
-                    request
-                        .get("admin/findDoctor", {
-                            params: {
-                                dId: dId,
-                            },
-                        })
-                        .then((res) => {
-                            if (res.data.status !== 200)
-                                return this.$message.error("请求数据失败");
-                            this.dId = res.data.data.dId;
-                            this.dName = res.data.data.dName;
-                        });
-                    this.starVisible = true;
-                    this.requestOrder();
                 });
         },
+
         //请求挂号信息
         requestOrder() {
             request
@@ -142,16 +174,11 @@ export default {
                     },
                 })
                 .then((res) => {
-                    console.log(res);
+                    console.log(res.data.data);
                     if (res.data.status !== 200) {
-                        console.log(res.data.data);
                         this.$message.error("请求数据失败");
                     }
-
                     this.orderData = res.data.data;
-                    console.log(this.orderData.oId);
-                    console.log(this.orderData.pName);
-                    console.log(res);
                 });
         },
     },

@@ -27,7 +27,7 @@ def find_all_checks():
         "checks": [check.to_dict() for check in checks_paginated.items],
     }
 
-    return jsonify({"code": 200, "msg": "查询成功", "data": result})
+    return jsonify({"status": 200, "msg": "查询成功", "data": result})
 
 # 查询单个检查项目
 @checks.route("/admin/findCheck", methods=["POST"])

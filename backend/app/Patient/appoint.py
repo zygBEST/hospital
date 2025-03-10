@@ -1,5 +1,4 @@
 import random
-import string
 from flask import Blueprint, jsonify, request
 import redis
 from ..models import Arrange, Doctor, Order, OrderDetail, OrderItem

@@ -27,6 +27,16 @@ def create_app():
     # 初始化数据库
     db.init_app(app)
 
+    # 支付宝沙箱环境配置
+    app.config["ALIPAY_CONFIG"] = {
+        "APP_ID": "9021000141650869",
+        "APP_PRIVATE_KEY_PATH": "alipay\私钥数据.txt",
+        "ALIPAY_PUBLIC_KEY_PATH": "alipay\公钥数据.txt",
+        "GATEWAY_URL": "https://openapi.alipaydev.com/gateway.do",  # 支付宝沙箱网关
+        "RETURN_URL": "http://localhost:5000/pay_success",  # 支付成功后跳转
+        "NOTIFY_URL": "http://localhost:5000/notify",  # 支付宝异步通知URL
+    }
+
     # 注册蓝图
     from app.Login.routes import Login
     from app.Admin.doctor import doctorInfo
@@ -43,6 +53,7 @@ def create_app():
     from app.Patient.patientorder import patientorder
     from app.Doctor.index import index_info
     from app.Doctor.ordertoday import ordertoday
+    from app.Doctor.orderhistory import orderhistory
 
     # 将所有蓝图存入列表
     blueprints = [
@@ -60,7 +71,8 @@ def create_app():
         orderinfo,
         patientorder,
         index_info,
-        ordertoday
+        ordertoday,
+        orderhistory,
     ]
 
     # 统一注册蓝图

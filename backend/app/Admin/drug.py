@@ -28,7 +28,7 @@ def find_all_drugs():
         "drugs": [drug.to_dict() for drug in drugs_paginated.items],
     }
 
-    return jsonify({"code": 200, "msg": "查询成功", "data": result})
+    return jsonify({"status": 200, "msg": "查询成功", "data": result})
 
 
 # 查找单个药品信息

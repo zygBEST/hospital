@@ -25,7 +25,6 @@
                 <el-table-column prop="oPriceState" label="缴费状态" width="100px">
                     <template slot-scope="scope">
                         <el-tag type="success" v-if="scope.row.oPriceState === 1">已缴费</el-tag>
-                        <!-- <el-tag type="danger" v-if="scope.row.oPriceState === 0 && scope.row.oState === 1">未缴费</el-tag> -->
                         <el-tag type="danger" v-if="
                             scope.row.oPriceState === 0 &&
                             scope.row.oState === 1
@@ -105,7 +104,7 @@ export default {
         //请求挂号信息
         requestOrders() {
             request
-                .get("order/findOrderByDid", {
+                .get("doctor/findOrderByDid", {
                     params: {
                         dId: this.userId,
                         pageNumber: this.pageNumber,
@@ -116,7 +115,9 @@ export default {
                 .then((res) => {
                     if (res.data.status !== 200)
                         this.$message.error("请求数据失败");
-                    this.orderData = res.data.data.orders;
+                    console.log(res.data);
+                    
+                    this.orderData = res.data.data;
                     this.total = res.data.data.total;
                 });
         },
@@ -126,8 +127,8 @@ export default {
         },
     },
     created() {
-        this.userId = this.tokenDecode(getToken()).dId;
-        console.log(this.orderData.pName);
+        const token = getToken(); // 获取 token
+        this.userId = jwtDecode(token).user_id;
         this.requestOrders();
     },
 };

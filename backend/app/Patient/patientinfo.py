@@ -5,7 +5,7 @@ from ..models import Patient
 # 定义个人信息蓝图对象
 patientinfo = Blueprint("patientinfo", __name__)
 
-
+# 查询个人信息
 @patientinfo.route("/patient/findPatientById", methods=["GET"])
 def find_patient():
     p_id = request.args.get("pId")  # 获取前端传递的 pId
