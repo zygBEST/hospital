@@ -183,6 +183,7 @@ class Order(db.Model):
     o_start = db.Column(db.String(255), nullable=False)  # 预约开始时间
     o_end = db.Column(db.String(255), nullable=False)  # 预约结束时间
     o_state = db.Column(db.Integer, nullable=False)  # 订单状态
+    o_alipay = db.Column(db.String(255), nullable=True) #挂号支付状态
 
 
     # 关联 order_details 和 order_items
@@ -197,6 +198,7 @@ class Order(db.Model):
             "oStart": self.o_start,
             "oEnd": self.o_end,
             "oState": self.o_state,
+            "oAlipay": self.o_alipay,
         }
 
 

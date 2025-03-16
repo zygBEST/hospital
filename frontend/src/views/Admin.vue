@@ -9,7 +9,7 @@
     margin-top: 7px;
     border-radius: 50%;">
         </div>
-        <div class="logo">欢迎使用医务管理系统！</div>
+        <div class="logo" @click="reloadComponent">欢迎使用医务管理系统！</div>
         <div class="time-display">
           现在是 {{ currentTime }}
         </div>
@@ -69,7 +69,7 @@
       </el-aside>
       <el-main>
         <!-- 子路由入口 -->
-        <router-view>
+        <router-view :key="componentKey">
           <div>你好吗</div>
         </router-view>
       </el-main>
@@ -87,6 +87,7 @@ export default {
       userName: "",
       activePath: "",
       currentTime: this.getFormattedTime(),
+      componentKey: 0, // 初始 key 值
     };
   },
   mounted() {
@@ -186,6 +187,10 @@ export default {
     updateTime() {
       this.currentTime = this.getFormattedTime();
     },
+    reloadComponent() {
+      this.componentKey++; // 每次点击都会改变 key 值
+      console.log("组件被重新加载");
+    },
   },
   beforeUnmount() {
     clearInterval(this.timer); // 组件销毁时清除定时器
@@ -200,8 +205,9 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.title {
-  cursor: pointer;
+.logo {
+  user-select: none; /* 禁止选中文本 */
+  cursor: pointer; /* 鼠标变成小手 */
 }
 
 .el-header {

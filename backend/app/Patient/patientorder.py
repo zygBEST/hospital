@@ -1,18 +1,16 @@
 from flask import Blueprint, current_app, jsonify, redirect, request
 from app.models import OrderDetail, OrderItem, Patient, Doctor, Order
 from app import db
-from alipay import AliPay
 
 
 # 定义我的挂号蓝图对象
 patientorder = Blueprint("patientorder", __name__)
 
-
+# 查询订单信息，并连接患者、医生表获取姓名
 @patientorder.route("/patient/findOrderByPid", methods=["GET"])
 def findOrderByPid():
     p_id = request.args.get("pId")
 
-    # 查询订单信息，并连接患者、医生表获取姓名
     orders = (
         db.session.query(Order, Patient.p_name, Doctor.d_name)
         .join(Patient, Order.p_id == Patient.p_id)  # 连接 Patient 表，获取 p_name
@@ -52,58 +50,31 @@ def findOrderByPid():
     return jsonify({"status": 200, "msg": "查询成功", "data": result})
 
 
-# 初始化支付宝 SDK
-def create_alipay():
-    ALIPAY_CONFIG = current_app.config["ALIPAY_CONFIG"]
-    return AliPay(
-        appid=ALIPAY_CONFIG["APP_ID"],
-        app_notify_url=ALIPAY_CONFIG["NOTIFY_URL"],
-        app_private_key_string=open(ALIPAY_CONFIG["APP_PRIVATE_KEY_PATH"]).read(),
-        alipay_public_key_string=open(ALIPAY_CONFIG["ALIPAY_PUBLIC_KEY_PATH"]).read(),
-        sign_type="RSA2",
-        debug=True,
-    )
+# 更新挂号状态
+def update_order_state(o_id):
+    order = Order.query.filter_by(o_id=o_id).first()
+    if order:
+        order.o_alipay = "PAID"
+        db.session.commit()
+        return True
+    else:
+        return False
 
-
-@patientorder.route("/alipay/pay", methods=["GET"])
-def alipay_pay():
-    # 获取前端传来的参数
-    subject = request.args.get("subject")
-    trade_no = request.args.get("tradeNo")
-    total_amount = request.args.get("totalAmount")
-
-    if not subject or not trade_no or not total_amount:
-        return jsonify({"error": "缺少必要参数"})
-
-    alipay = create_alipay()
-
-    # 生成支付宝订单支付字符串
-    order_string = alipay.api_alipay_trade_page_pay(
-        out_trade_no=trade_no,
-        total_amount=str(total_amount),
-        subject=subject,
-        return_url=current_app.config["ALIPAY_CONFIG"]["RETURN_URL"],
-        notify_url=current_app.config["ALIPAY_CONFIG"]["NOTIFY_URL"],
-    )
-
-    # 拼接支付宝支付URL
-    pay_url = f"https://openapi-sandbox.dl.alipaydev.com/gateway.do?{order_string}"
-    # 重定向到支付宝支付页面
-    return redirect(pay_url)
-
-# 获取支付宝支付成功回调的参数
-@patientorder.route("/pay_success")
-def pay_success():
-    out_trade_no = request.args.get("out_trade_no")
-    total_amount = request.args.get("total_amount")
-    # 如果验证通过，进行相应的操作，比如更新订单状态
-    update_order_state(out_trade_no)
-    return "支付成功，订单号: " + out_trade_no + ", 支付金额: " + total_amount + "元"
+# 更新前端页面显示的挂号结果
+@patientorder.route("/order/o_state", methods=["GET"])
+def update_order_o_state():
+    o_id = request.args.get("oId")
+    print(o_id)
+    order = Order.query.filter_by(o_id=o_id).first()
+    if order:
+        message = order.o_alipay
+        return jsonify({"status": 200, "message": message})
+    else:
+        return jsonify({"status": 400, "msg": "更新失败"})
 
 # 更新订单支付状态
-def update_order_state(trade_no):
+def update_order_item_state(trade_no):
     order_item = OrderItem.query.filter_by(o_id=trade_no).first()
-    print(order_item)
     if order_item:
         order_item.o_price_state = 1
         order_item.o_total_price = 0
@@ -112,7 +83,8 @@ def update_order_state(trade_no):
         return True
     else:
         return False
-    
+
+
 # 更新前端页面显示的订单状态
 @patientorder.route("/order/status", methods=["GET"])
 def update_order_status():
@@ -123,3 +95,29 @@ def update_order_status():
         return jsonify({"status": 200, "message": message})
     else:
         return jsonify({"status": 400, "msg": "更新失败"})
+    
+
+# 更新医生评分
+@patientorder.route("/doctor/updateStar", methods=["GET"])
+def update_star():
+    d_id = request.args.get("dId")
+    d_star = request.args.get("dStar", type=int)
+
+    if not d_id or d_star is None:
+        return jsonify({"status": 400, "msg": "参数缺失"})
+
+    # 查询医生信息
+    doctor = Doctor.query.filter_by(d_id=d_id).first()
+    
+    if not doctor:
+        return jsonify({"status": 404, "msg": "医生不存在"})
+
+    # 更新评分信息
+    doctor.d_people += 1
+    doctor.d_star += d_star
+    doctor.d_avg_star = doctor.d_star / doctor.d_people
+
+    # 提交数据库
+    db.session.commit()
+
+    return jsonify({"status": 200, "message": "谢谢您的评价!", "data": {"d_avg_star": doctor.d_avg_star}})

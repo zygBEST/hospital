@@ -29,6 +29,16 @@
                     <el-tag type="danger" v-if="scope.row.oPriceState === 0 && scope.row.oState === 1">未缴费</el-tag>
                 </template>
             </el-table-column>
+            <el-table-column label="挂号费用支付" prop="oAlipay" width="200px">
+                <template slot-scope="scope">
+                    <el-tag type="success" v-if="
+                        scope.row.oAlipay === 'PAID'
+                    ">已支付</el-tag>
+                    <el-tag type="danger" v-if="
+                        scope.row.oAlipay === null
+                    ">未支付</el-tag>
+                </template>
+            </el-table-column>
             <el-table-column prop="oState" label="挂号状态" width="100px">
                 <template slot-scope="scope">
                     <el-tag type="success" v-if="scope.row.oState === 1 && scope.row.oPriceState === 1">已完成</el-tag>

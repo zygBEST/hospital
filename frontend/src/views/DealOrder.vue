@@ -187,15 +187,13 @@ export default {
     //根据id减少药物数量
     reduceDrugNumber(drId, usedNumber) {
       request
-        .get("drug/reduceDrugNumber", {
-          params: {
+        .post("drug/reduceDrugNumber", {
             drId: drId,
             usedNumber: usedNumber,
-          },
         })
         .then((res) => {
           if (res.data.status !== 200) {
-            this.$message.error("药物数量不足！！");
+            this.$message.error(res.data.message);
           }
         });
     },

@@ -8,9 +8,22 @@
             <el-table-column label="患者姓名" prop="pName"></el-table-column>
             <el-table-column label="医生姓名" prop="dName"></el-table-column>
             <el-table-column label="挂号时间" prop="oStart" width="200px"></el-table-column>
+            <el-table-column label="挂号费用支付" prop="oAlipay" width="200px">
+                <template slot-scope="scope">
+                    <el-tag type="success" v-if="
+                        scope.row.oAlipay === 'PAID'
+                    ">已支付</el-tag>
+                    <el-tag type="danger" v-if="
+                        scope.row.oAlipay === null
+                    ">未支付</el-tag>
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="warning" style="font-size: 18px" @click="dealClick(scope.row.oId, scope.row.pId)">
+                    <el-button type="warning" style="font-size: 18px" @click="dealClick(scope.row.oId, scope.row.pId)"
+                        v-if="
+                            scope.row.oAlipay === 'PAID'
+                        ">
                         <i class="el-icon-monitor" style="font-size: 18px"></i>
                         处理
                     </el-button>

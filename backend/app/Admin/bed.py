@@ -44,7 +44,7 @@ def clear_beds():
     bed.b_reason = None
     bed.b_state = 0
 
-    p_bed = PBed.query.filter(PBed.b_id == b_id).first()
+    p_bed = PBed.query.filter(PBed.b_id == b_id, PBed.b_end == None).first()
     p_bed.b_end = datetime.now().strftime("%Y-%m-%d %H:%M")
     bed.b_end = datetime.now().strftime("%Y-%m-%d %H:%M")
 

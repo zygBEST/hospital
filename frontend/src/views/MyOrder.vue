@@ -14,11 +14,10 @@
                 <el-table-column prop="oPriceState" label="缴费状态" width="150px">
                     <template slot-scope="scope">
                         <el-tag type="success" v-if="scope.row.oPriceState === 1">已缴费</el-tag>
-                        <!-- <el-tag type="danger" v-if="scope.row.oPriceState === 0 && scope.row.oState === 1">未缴费</el-tag> -->
                         <el-button type="warning" icon="iconfont icon-r-mark1" style="font-size: 14px" v-if="
                             scope.row.oPriceState === 0 &&
                             scope.row.oState === 1
-                        " @click="priceClick(scope.row.oId, scope.row.dId,scope.row.oTotalPrice, scope.row.pName)">
+                        " @click="priceClick(scope.row.oId, scope.row.dId, scope.row.oTotalPrice, scope.row.pName)">
                             点击缴费</el-button>
                     </template>
                 </el-table-column>
@@ -94,23 +93,44 @@ export default {
                 .then((res) => {
                     if (res.data.status !== 200)
                         return this.$message.error("评价失败");
-                    this.$message.success("谢谢您的评价");
+                    this.$message.success(res.data.message);
                     this.starVisible = false;
                 });
         },
         //查看报告单
         seeReport(id) {
             window.location.href =
-                "http://localhost:5000/patient/pdf?oId=" + id;
+                "http://127.0.0.1:5000/patient/pdf?oId=" + id;
         },
         //点击缴费按钮
         priceClick(oId, dId, oTotalPrice, pName) {
-            // 构造支付链接并重定向
-            const payUrl = `http://localhost:5000/alipay/pay?subject=${pName}就诊费用&tradeNo=${oId}&totalAmount=${oTotalPrice}`;
-            window.open(payUrl, '_blank', 'width=800,height=600');
+            // 发送 POST 请求到后端
+            fetch("http://127.0.0.1:5000/alipay/pay", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    subject: `${pName}就诊费用`,
+                    tradeNo: oId,
+                    totalAmount: oTotalPrice,
+                    passbackParams: "order" //订单支付
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.payUrl) {
+                        // 在新窗口打开支付宝支付页面
+                        window.open(data.payUrl, '_blank', 'width=800,height=600');
+                    } else {
+                        console.error("支付请求失败:", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("网络错误:", error);
+                });
+
 
             // 设置轮询
-            const pollInterval = 3000; // 每3秒查询一次状态
+            const pollInterval = 5000; // 每5秒查询一次状态
             const pollOrderStatus = setInterval(() => {
                 request
                     .get("order/status", {
@@ -119,7 +139,6 @@ export default {
                         },
                     })
                     .then((res) => {
-                        console.log(res.data.message);
                         if (res.data.message === "PAID") {
                             clearInterval(pollOrderStatus); // 停止轮询
                             this.$message.success("支付成功！");
@@ -132,21 +151,6 @@ export default {
                     });
             }, pollInterval);
         },
-
-        // updateOrderStatus(oId, dId) {
-        //     request
-        //         .get("order/updatePrice", {
-        //             params: { oId: oId },
-        //         })
-        //         .then((res) => {
-        //             if (res.data.status === 200) {
-        //                 this.$message.success("订单状态更新成功！");
-        //                 this.findDoctor(dId, oId);
-        //             } else {
-        //                 this.$message.error("更新订单状态失败!");
-        //             }
-        //         });
-        // },
 
         findDoctor(dId, oId) {
             request

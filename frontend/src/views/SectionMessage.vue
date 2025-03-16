@@ -20,7 +20,8 @@
                     <i class="iconfont icon-r-paper" style="font-size: 22px">请选择你要挂号的日期：</i>
                     <ul class="dateUl">
                         <li v-for="monthDay in monthDays" :key="monthDay">
-                            <el-button icon="iconfont icon-r-paper" @click="dateClick(monthDay)">{{ monthDay}}</el-button>
+                            <el-button icon="iconfont icon-r-paper" @click="dateClick(monthDay)">{{
+                                monthDay }}</el-button>
                         </li>
                     </ul>
                 </div>
@@ -47,7 +48,7 @@
                 <el-table-column label="操作" width="140" v-if="clickTag">
                     <template slot-scope="scope">
                         <el-button class="iconfont icon-r-paper" style="font-size: 14px" type="warning"
-                            @click="openClick(scope.row.dId, scope.row.dName)">
+                            @click="openClick(scope.row.dId, scope.row.dName, scope.row.dPrice)">
                             挂号</el-button>
                     </template>
                 </el-table-column>
@@ -76,6 +77,9 @@
                 </el-form-item>
                 <el-form-item label="患者身份证号" label-width="100px">
                     <el-input v-model="orderForm.pCard" autocomplete="off" disabled></el-input>
+                </el-form-item>
+                <el-form-item label="挂号费用" label-width="100px">
+                    <el-input v-model="orderForm.dPrice" autocomplete="off" disabled style="width: 150px;"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -180,10 +184,11 @@ export default {
             // 比较当前时间是否超过了目标时间
             return currentTime > targetTime;
         },
-        //挂号点击确认
+        // 挂号点击确认
         orderSuccess(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
+                    // 先提交挂号请求
                     request
                         .post("patient/addOrder", {
                             pId: this.userId,
@@ -196,14 +201,58 @@ export default {
                         })
                         .then((res) => {
                             console.log(res.data);
-
-                            if (res.data.status != 200)
+                            if (res.data.status !== 200)
                                 return this.$message.error(
                                     "该时间段无剩余号源！请重新选择！"
                                 );
-                            this.orderFormVisible = false;
-                            this.$message.success("挂号成功！");
-                            this.orderForm.oTime = '';
+
+                            // 获取挂号单号
+                            const orderId = res.data.oId;
+
+                            // 调用支付接口
+                            return request.post("alipay/pay", {
+                                subject: this.orderForm.pName + "挂号费",
+                                tradeNo: "gh" + orderId,
+                                totalAmount: this.orderForm.dPrice, // 费用
+                                passbackParams: "registration"  // 挂号支付
+                            });
+                        })
+                        .then(data => {
+                            console.log(data);
+                            
+                            if (data.data.payUrl) {
+                                // 在新窗口打开支付宝支付页面
+                                window.open(data.data.payUrl, '_blank', 'width=800,height=600');
+                                this.oId = data.data.tradeNo;
+                                console.log("请求 oId:", this.oId);
+                                // 设置轮询，确保支付完成后才继续
+                                const pollInterval = 5000; // 每5秒查询一次状态
+                                
+                                const pollOrderStatus = setInterval(() => {
+                                    request
+                                        .get("order/o_state", {  
+                                            params: {
+                                                oId: this.oId.substring(2) // 去掉前两位
+                                            },
+                                        })
+                                        .then((res) => {
+                                            if (res.data.message === "PAID") {
+                                                clearInterval(pollOrderStatus); // 停止轮询
+                                                this.orderFormVisible = false;
+                                                this.$message.success("挂号成功！");
+                                                this.orderForm.oTime = '';
+                                            }
+                                        })
+                                        .catch((error) => {
+                                            console.error("查询订单状态出错:", error);
+                                        });
+                                }, pollInterval);
+                            } else {
+                                console.error("支付请求失败:", data);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("网络错误:", error);
                         });
                 } else {
                     console.log("error submit!!");
@@ -212,11 +261,12 @@ export default {
             });
         },
         //打开挂号对话框
-        openClick(id, name) {
+        openClick(id, name, price) {
             this.orderForm.dId = id;
             this.orderForm.dName = name;
             this.orderForm.pName = this.patientData.pName;
             this.orderForm.pCard = this.patientData.pCard;
+            this.orderForm.dPrice = price;
             this.orderFormVisible = true;
             //请求挂号时间段
             this.requestTime(id);
@@ -294,7 +344,6 @@ export default {
                         return this.$message.error("获取数据失败");
                     this.patientData = res.data.data;
                     console.log(this.patientData);
-
                 })
         }
     },

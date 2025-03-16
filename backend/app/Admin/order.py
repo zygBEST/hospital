@@ -21,7 +21,7 @@ def find_all_orders():
         .join(OrderDetail, Order.o_id == OrderDetail.o_id)  # 关联订单详情表
         .join(OrderItem, Order.o_id == OrderItem.o_id)  # 关联订单项目表
         .filter(Order.p_id.like(f"%{query}%"))  # 可选的搜索条件
-        .order_by(Order.o_end.desc())
+        .order_by(Order.o_start.desc())
     )
 
     # 分页
@@ -39,6 +39,7 @@ def find_all_orders():
                 "dId": order.d_id,
                 "oStart": order.o_start,
                 "oEnd": order.o_end,
+                "oAlipay": order.o_alipay,
                 "oRecord": order_detail.o_record,
                 "oDrug": order_item.o_drug,
                 "oCheck": order_item.o_check,

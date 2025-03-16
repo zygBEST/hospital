@@ -18,7 +18,7 @@
 
                 <el-table-column prop="oStart" label="挂号时间" width="190px"></el-table-column>
                 <el-table-column prop="oEnd" label="结束时间" width="180px"></el-table-column>
-                <el-table-column prop="oRecord" label="病因" width="400px"></el-table-column>
+                <el-table-column prop="oRecord" label="病因" width="200px"></el-table-column>
                 <el-table-column prop="oDrug" label="药物" width="180px"></el-table-column>
                 <el-table-column prop="oCheck" label="检查项目" width="180px"></el-table-column>
                 <el-table-column prop="oTotalPrice" label="需交费用/元" width="80px"></el-table-column>
@@ -52,7 +52,6 @@
                     </template>
                 </el-table-column>
             </el-table>
-
             <!-- 分页 -->
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" background
                 layout="total, sizes, prev, pager, next, jumper" :current-page="pageNumber" :page-size="size"
@@ -118,7 +117,7 @@ export default {
                     console.log(res.data);
 
                     this.orderData = res.data.data;
-                    this.total = res.data.data.total;
+                    this.total = res.data.total;
                 });
         },
         //token解码

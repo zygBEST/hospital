@@ -34,7 +34,7 @@ def create_app():
         "ALIPAY_PUBLIC_KEY_PATH": "alipay\公钥数据.txt",
         "GATEWAY_URL": "https://openapi.alipaydev.com/gateway.do",  # 支付宝沙箱网关
         "RETURN_URL": "http://localhost:5000/pay_success",  # 支付成功后跳转
-        "NOTIFY_URL": "http://localhost:5000/notify",  # 支付宝异步通知URL
+        "NOTIFY_URL": "http://cy7dvw.natappfree.cc/alipay/notify",  # 支付宝异步通知URL
     }
 
     # 注册蓝图
@@ -56,6 +56,8 @@ def create_app():
     from app.Doctor.orderhistory import orderhistory
     from app.Doctor.orderfinish import orderfinish
     from app.Patient.bedinfo import pbedinfo
+    from app.Admin.dataExpore import dataExpore
+    from app.Patient.alipay import alipay
 
     # 将所有蓝图存入列表
     blueprints = [
@@ -77,6 +79,8 @@ def create_app():
         orderhistory,
         orderfinish,
         pbedinfo,
+        dataExpore,
+        alipay,
     ]
 
     # 统一注册蓝图

@@ -13,33 +13,50 @@ orderhistory = Blueprint("orderhistory", __name__)
 @orderhistory.route("/doctor/findOrderByDid", methods=["GET"])
 def find_order_by_did():
     d_id = request.args.get("dId", type=int)
+    page_number = request.args.get("pageNumber", type=int, default=1)
+    size = request.args.get("size", type=int, default=10)
+    query = request.args.get("query", default="")
+
     if not d_id:
         return jsonify({"status": 400, "msg": "缺少 dId 参数"})
-    
+
     today = datetime.now().strftime("%Y-%m-%d")
 
-    orders = (
-        db.session.query(Order, Patient, OrderDetail, OrderItem)
-        .join(Patient, Order.p_id == Patient.p_id)  # 关联患者表
-        .join(OrderDetail, Order.o_id == OrderDetail.o_id)  # 关联订单详情表
-        .join(OrderItem, Order.o_id == OrderItem.o_id)  # 关联订单项目表
-        .filter(Order.d_id == d_id)
-        .filter(or_(Order.o_state == 1, Order.o_end < today))
+    # 基础查询
+    order_query = db.session.query(Order, Patient, OrderDetail, OrderItem) \
+        .join(Patient, Order.p_id == Patient.p_id) \
+        .join(OrderDetail, Order.o_id == OrderDetail.o_id) \
+        .join(OrderItem, Order.o_id == OrderItem.o_id) \
+        .filter(Order.d_id == d_id) \
+        .filter(or_(Order.o_state == 1, Order.o_start < today)) \
         .order_by(Order.o_end.desc())
-        .all()
-    )
 
+    # 如果有查询关键字，增加模糊查询
+    if query:
+        order_query = order_query.filter(Order.p_id.like(f"%{query}%"))
+
+    # 分页查询
+    paginated_orders = order_query.paginate(page=page_number, per_page=size, error_out=False)
+
+    # 结果转换
     result = [
         {
             **order.to_dict(),
-            "pName": patient.p_name,  # 患者姓名
+            "pName": patient.p_name,
             **order_detail.to_dict(),
             **order_item.to_dict(),
         }
-        for order, patient, order_detail, order_item in orders
+        for order, patient, order_detail, order_item in paginated_orders.items
     ]
 
-    return jsonify({"status": 200, "msg": "查询成功", "data": result})
+    return jsonify({
+        "status": 200,
+        "msg": "查询成功",
+        "data": result,
+        "total": paginated_orders.total,  # 总条数
+        "pages": paginated_orders.pages,  # 总页数
+        "pageNumber": paginated_orders.page, # 当前页
+    })
 
 
 @orderhistory.route("/doctor/updateOrderByAdd", methods=["POST"])

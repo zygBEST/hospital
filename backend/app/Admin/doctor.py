@@ -156,3 +156,5 @@ def delete_doctor():
     db.session.commit()
 
     return jsonify({"status": 200, "message": "删除医生成功！"})
+
+

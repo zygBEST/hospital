@@ -96,12 +96,12 @@ def add_order():
 
     time_slot = o_start[11:22]  # 获取时间段
     time_map = {
-        "08:30-09:30": "eTOn",
+        "00:01-09:30": "eTOn",
         "09:30-10:30": "nTOt",
         "10:30-11:30": "tTOe",
         "14:30-15:30": "fTOf",
         "15:30-16:30": "fTOs",
-        "16:30-23:30": "sTOs",
+        "16:30-23:59": "sTOs",
     }
 
     if time_slot in time_map:
@@ -165,4 +165,4 @@ def add_order():
     # 提交事务
     db.session.commit()
 
-    return {"status": 200, "message": "挂号成功！"}
+    return {"status": 200, "message": "挂号成功！", "oId": new_order.o_id}

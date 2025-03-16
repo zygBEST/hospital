@@ -119,3 +119,25 @@ def delete_drug():
     db.session.delete(drug)
     db.session.commit()
     return jsonify({"status": 200, "message": "删除药品信息成功！"})
+
+# 更新药物库存
+@drugInfo.route("/drug/reduceDrugNumber", methods=["POST"])
+def reduce_drug_number():
+    # 获取 JSON 数据
+    dr_id = request.json.get("drId")
+    dr_number = request.json.get("usedNumber")
+    # 输出数据类型
+    print(type(dr_id))
+    print(type(dr_number))
+
+    # 查找要删除的药品对象
+    drug = Drug.query.filter_by(dr_id=dr_id).first()
+    if drug.dr_number < dr_number:
+        return jsonify({"status": 402, "message": "药品库存不足！"})
+
+    if not drug:
+        return jsonify({"status": 404, "message": "药品不存在！"})
+    
+    drug.dr_number -= dr_number
+    db.session.commit()
+    return jsonify({"status": 200, "message": "减少药品库存成功！"})
