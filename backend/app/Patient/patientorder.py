@@ -1,10 +1,11 @@
-from flask import Blueprint, current_app, jsonify, redirect, request
+from flask import Blueprint, jsonify, request
 from app.models import OrderDetail, OrderItem, Patient, Doctor, Order
-from app import db
+from app import db, create_alipay
 
 
 # 定义我的挂号蓝图对象
 patientorder = Blueprint("patientorder", __name__)
+
 
 # 查询订单信息，并连接患者、医生表获取姓名
 @patientorder.route("/patient/findOrderByPid", methods=["GET"])
@@ -50,7 +51,7 @@ def findOrderByPid():
     return jsonify({"status": 200, "msg": "查询成功", "data": result})
 
 
-# 更新挂号状态
+# 更新挂号支付状态
 def update_order_state(o_id):
     order = Order.query.filter_by(o_id=o_id).first()
     if order:
@@ -60,17 +61,30 @@ def update_order_state(o_id):
     else:
         return False
 
-# 更新前端页面显示的挂号结果
+
+# 返回挂号支付状态（前端轮询模块）
 @patientorder.route("/order/o_state", methods=["GET"])
 def update_order_o_state():
     o_id = request.args.get("oId")
-    print(o_id)
     order = Order.query.filter_by(o_id=o_id).first()
     if order:
-        message = order.o_alipay
-        return jsonify({"status": 200, "message": message})
+        # 如果数据库已经标记支付成功，直接返回
+        if order.o_alipay == "PAID":
+            return jsonify({"status": 200, "message": "PAID"})
+        # 否则，主动查询支付宝订单状态
+        o_id = f"gh{o_id}"  # 拼接 "gh" 前缀
+        print(o_id)
+        alipay = create_alipay()
+        result = alipay.api_alipay_trade_query(out_trade_no=str(o_id))
+        # 如果支付宝返回支付成功，更新数据库
+        if result.get("trade_status") == "TRADE_SUCCESS":
+            update_order_state(o_id[2:])
+            return jsonify({"status": 200, "message": "PAID"})
+        else:
+            return jsonify({"status": 200, "message": "PENDING"})  # 等待支付
     else:
         return jsonify({"status": 400, "msg": "更新失败"})
+
 
 # 更新订单支付状态
 def update_order_item_state(trade_no):
@@ -85,17 +99,27 @@ def update_order_item_state(trade_no):
         return False
 
 
-# 更新前端页面显示的订单状态
+# 返回订单支付状态（前端轮询模块）
 @patientorder.route("/order/status", methods=["GET"])
 def update_order_status():
     o_id = request.args.get("oId")
     order_item = OrderItem.query.filter_by(o_id=o_id).first()
     if order_item:
-        message = order_item.o_alipay
-        return jsonify({"status": 200, "message": message})
+        # 如果数据库已经标记支付成功，直接返回
+        if order_item.o_alipay == "PAID":
+            return jsonify({"status": 200, "message": "PAID"})
+        # 否则，主动查询支付宝订单状态
+        alipay = create_alipay()
+        result = alipay.api_alipay_trade_query(out_trade_no=o_id)
+        if result.get("trade_status") == "TRADE_SUCCESS":
+            update_order_item_state(o_id)
+            return jsonify({"status": 200, "message": "PAID"})
+        else:
+            message = "PENDING"
+            return jsonify({"status": 200, "message": message})
     else:
         return jsonify({"status": 400, "msg": "更新失败"})
-    
+
 
 # 更新医生评分
 @patientorder.route("/doctor/updateStar", methods=["GET"])
@@ -108,7 +132,7 @@ def update_star():
 
     # 查询医生信息
     doctor = Doctor.query.filter_by(d_id=d_id).first()
-    
+
     if not doctor:
         return jsonify({"status": 404, "msg": "医生不存在"})
 
@@ -120,4 +144,10 @@ def update_star():
     # 提交数据库
     db.session.commit()
 
-    return jsonify({"status": 200, "message": "谢谢您的评价!", "data": {"d_avg_star": doctor.d_avg_star}})
+    return jsonify(
+        {
+            "status": 200,
+            "message": "谢谢您的评价!",
+            "data": {"d_avg_star": doctor.d_avg_star},
+        }
+    )

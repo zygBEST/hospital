@@ -1,8 +1,9 @@
 # __init__.py
-from flask import Flask
+from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import secrets, redis
+from alipay import AliPay
 
 secret_key = secrets.token_hex(
     32
@@ -30,11 +31,11 @@ def create_app():
     # 支付宝沙箱环境配置
     app.config["ALIPAY_CONFIG"] = {
         "APP_ID": "9021000141650869",
-        "APP_PRIVATE_KEY_PATH": "alipay\私钥数据.txt",
-        "ALIPAY_PUBLIC_KEY_PATH": "alipay\公钥数据.txt",
+        "APP_PRIVATE_KEY_PATH": "alipay/私钥数据.txt",
+        "ALIPAY_PUBLIC_KEY_PATH": "alipay/公钥数据.txt",
         "GATEWAY_URL": "https://openapi.alipaydev.com/gateway.do",  # 支付宝沙箱网关
         "RETURN_URL": "http://localhost:5000/pay_success",  # 支付成功后跳转
-        "NOTIFY_URL": "http://cy7dvw.natappfree.cc/alipay/notify",  # 支付宝异步通知URL
+        "NOTIFY_URL": "http://f6wp3k.natappfree.cc/alipay/notify",  # 支付宝异步通知URL
     }
 
     # 注册蓝图
@@ -88,6 +89,19 @@ def create_app():
         app.register_blueprint(blueprint)
 
     return app
+
+
+# 初始化支付宝 SDK
+def create_alipay():
+    ALIPAY_CONFIG = current_app.config["ALIPAY_CONFIG"]
+    return AliPay(
+        appid=ALIPAY_CONFIG["APP_ID"],
+        app_notify_url=ALIPAY_CONFIG["NOTIFY_URL"],
+        app_private_key_string=open(ALIPAY_CONFIG["APP_PRIVATE_KEY_PATH"]).read(),
+        alipay_public_key_string=open(ALIPAY_CONFIG["ALIPAY_PUBLIC_KEY_PATH"]).read(),
+        sign_type="RSA2",
+        debug=True,
+    )
 
 
 # 连接redis服务器

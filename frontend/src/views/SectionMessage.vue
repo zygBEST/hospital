@@ -241,6 +241,7 @@ export default {
                                                 this.orderFormVisible = false;
                                                 this.$message.success("挂号成功！");
                                                 this.orderForm.oTime = '';
+                                                this.$router.push("myOrder");
                                             }
                                         })
                                         .catch((error) => {

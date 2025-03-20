@@ -1,24 +1,10 @@
 # 定义支付宝支付蓝图对象
 
 from flask import Blueprint, current_app, jsonify, request
-from alipay import AliPay
+from app import create_alipay
 from app.Patient.patientorder import update_order_item_state, update_order_state
 
 alipay = Blueprint("alipay", __name__)
-
-
-# 初始化支付宝 SDK
-def create_alipay():
-    ALIPAY_CONFIG = current_app.config["ALIPAY_CONFIG"]
-    return AliPay(
-        appid=ALIPAY_CONFIG["APP_ID"],
-        app_notify_url=ALIPAY_CONFIG["NOTIFY_URL"],
-        app_private_key_string=open(ALIPAY_CONFIG["APP_PRIVATE_KEY_PATH"]).read(),
-        alipay_public_key_string=open(ALIPAY_CONFIG["ALIPAY_PUBLIC_KEY_PATH"]).read(),
-        sign_type="RSA2",
-        debug=True,
-    )
-
 
 # 调用支付接口
 @alipay.route("/alipay/pay", methods=["POST"])
