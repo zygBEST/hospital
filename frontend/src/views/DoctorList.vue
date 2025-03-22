@@ -33,21 +33,21 @@
             </el-table-column>
             <el-table-column prop="dName" label="姓名" width="80">
             </el-table-column>
-            <el-table-column prop="dGender" label="性别" width="60">
+            <el-table-column prop="details.dGender" label="性别" width="60">
             </el-table-column>
-            <el-table-column prop="dPost" label="职位" width="100">
+            <el-table-column prop="details.dPost" label="职位" width="100">
             </el-table-column>
-            <el-table-column prop="dSection" label="科室" width="100">
+            <el-table-column prop="details.dSection" label="科室" width="100">
             </el-table-column>
-            <el-table-column prop="dCard" label="证件号">
+            <el-table-column prop="details.dCard" label="证件号">
             </el-table-column>
-            <el-table-column prop="dPhone" label="手机号">
+            <el-table-column prop="details.dPhone" label="手机号">
             </el-table-column>
-            <el-table-column prop="dEmail" label="邮箱" width="170">
+            <el-table-column prop="details.dEmail" label="邮箱" width="170">
             </el-table-column>
-            <el-table-column prop="dAvgStar" label="评分/5分" width="80">
+            <el-table-column prop="details.dAvgStar" label="评分/5分" width="80">
             </el-table-column>
-            <el-table-column prop="dPrice" label="挂号费/元" width="100">
+            <el-table-column prop="details.dPrice" label="挂号费/元" width="100">
             </el-table-column>
             <el-table-column prop="dState" label="是否在职" width="80">
                 <template slot-scope="scope">
@@ -150,10 +150,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="身份证号" label-width="80px" prop="dCard">
-                    <el-input v-model="modifyForm.dCard" autocomplete="off"></el-input>
+                    <el-input v-model="modifyForm.dCard" autocomplete="off" maxlength="18"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号" label-width="80px" prop="dPhone">
-                    <el-input v-model="modifyForm.dPhone" autocomplete="off"></el-input>
+                    <el-input v-model="modifyForm.dPhone" autocomplete="off" maxlength="11"></el-input>
                 </el-form-item>
                 <el-form-item label="邮箱" label-width="80px" prop="dEmail">
                     <el-input v-model="modifyForm.dEmail" autocomplete="off"></el-input>
@@ -407,7 +407,7 @@ export default {
                         })
                         .catch((error) => {
                             console.error(error);
-                            this.$message.error("服务器异常！");
+                            this.$message.error("该医生仍有关联数据，无法删除!");
                         });
                 })
                 .catch(() => {

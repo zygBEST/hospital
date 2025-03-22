@@ -198,8 +198,8 @@ export default {
     //根据id减少药物数量
     reduceDrugNumber(drId, usedNumber) {
       request.post("drug/reduceDrugNumber", {
-          drId: drId,
-          usedNumber: usedNumber,
+        drId: drId,
+        usedNumber: usedNumber,
       })
         .then(res => {
           if (res.data.status !== 200) {
@@ -209,9 +209,7 @@ export default {
     },
     //点击提交按钮
     submitClick() {
-      for (let i = 0; i < this.drugBuyData.length; i++) {
-        this.reduceDrugNumber(this.drugBuyData[i].drId, this.drugBuyData[i].drNum);
-      };
+
       let data = {
         oId: this.dataPackage().oId,
         oAdvice: this.dataPackage().oAdvice,
@@ -226,6 +224,9 @@ export default {
             this.$message.error("请求信息错误");
             return;
           }
+          for (let i = 0; i < this.drugBuyData.length; i++) {
+            this.reduceDrugNumber(this.drugBuyData[i].drId, this.drugBuyData[i].drNum);
+          };
           this.$message.success("提交成功！请登录系统自助缴费！");
           this.$router.push("/doctorOrder");
           console.log(res.data)

@@ -180,7 +180,7 @@ export default {
     },
     reloadComponent() {
       this.componentKey++; // 每次点击都会改变 key 值
-      console.log("组件被重新加载");
+      return this.$message.success("已加载最新数据");
     },
   },
   beforeUnmount() {

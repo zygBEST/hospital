@@ -1,5 +1,6 @@
+from datetime import datetime
 from flask import Blueprint, jsonify, request
-from app.models import OrderDetail, OrderItem, Patient, Doctor, Order
+from app.models import Alipay, DoctorDetails, OrderDetail, OrderItem, Patient, Doctor, Order
 from app import db, create_alipay
 
 
@@ -24,14 +25,15 @@ def findOrderByPid():
     # 组织返回数据
     result = []
     for order, p_name, d_name in orders:
-        # 查询订单详情（病历、医嘱等）
-        order_detail = (
-            db.session.query(OrderDetail).filter(OrderDetail.o_id == order.o_id).first()
-        )
 
         # 查询订单项（药品和检查项）
         order_items = (
             db.session.query(OrderItem).filter(OrderItem.o_id == order.o_id).all()
+        )
+
+        # 查询支付记录
+        alipay = (
+            db.session.query(Alipay).filter(Alipay.o_id == order.o_id).first()
         )
 
         for item in order_items:
@@ -40,11 +42,8 @@ def findOrderByPid():
                     **order.to_dict(),  # 使用 Order 模型的 to_dict 方法
                     "pName": p_name,  # 添加患者姓名
                     "dName": d_name,  # 添加医生姓名
-                    "oRecord": (order_detail.o_record if order_detail else None),
-                    "oTotalPrice": item.o_total_price,  # 直接展开订单项的字段
-                    "oPriceState": item.o_price_state,
-                    "oCheck": item.o_check,
-                    "oDrug": item.o_drug,
+                    "oTotalPrice": alipay.o_total_price,
+                    "oPriceState": alipay.o_price_state,
                 }
             )
 
@@ -53,9 +52,10 @@ def findOrderByPid():
 
 # 更新挂号支付状态
 def update_order_state(o_id):
-    order = Order.query.filter_by(o_id=o_id).first()
-    if order:
-        order.o_alipay = "PAID"
+    alipay = Alipay.query.filter_by(o_id=o_id).first()
+    if alipay:
+        alipay.o_gh_alipay = "PAID"
+        alipay.o_end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 支付结束时间
         db.session.commit()
         return True
     else:
@@ -66,16 +66,16 @@ def update_order_state(o_id):
 @patientorder.route("/order/o_state", methods=["GET"])
 def update_order_o_state():
     o_id = request.args.get("oId")
-    order = Order.query.filter_by(o_id=o_id).first()
-    if order:
+    alipay = Alipay.query.filter_by(o_id=o_id).first()
+    if alipay:
         # 如果数据库已经标记支付成功，直接返回
-        if order.o_alipay == "PAID":
+        if alipay.o_gh_alipay == "PAID":
             return jsonify({"status": 200, "message": "PAID"})
         # 否则，主动查询支付宝订单状态
         o_id = f"gh{o_id}"  # 拼接 "gh" 前缀
         print(o_id)
-        alipay = create_alipay()
-        result = alipay.api_alipay_trade_query(out_trade_no=str(o_id))
+        alipay_query = create_alipay()
+        result = alipay_query.api_alipay_trade_query(out_trade_no=str(o_id))
         # 如果支付宝返回支付成功，更新数据库
         if result.get("trade_status") == "TRADE_SUCCESS":
             update_order_state(o_id[2:])
@@ -88,11 +88,12 @@ def update_order_o_state():
 
 # 更新订单支付状态
 def update_order_item_state(trade_no):
-    order_item = OrderItem.query.filter_by(o_id=trade_no).first()
-    if order_item:
-        order_item.o_price_state = 1
-        order_item.o_total_price = 0
-        order_item.o_alipay = "PAID"
+    alipay = Alipay.query.filter_by(o_id=trade_no).first()
+    if alipay:
+        alipay.o_price_state = 1
+        alipay.o_total_price = 0
+        alipay.o_alipay = "PAID"
+        alipay.o_end = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 支付结束时间
         db.session.commit()
         return True
     else:
@@ -103,14 +104,14 @@ def update_order_item_state(trade_no):
 @patientorder.route("/order/status", methods=["GET"])
 def update_order_status():
     o_id = request.args.get("oId")
-    order_item = OrderItem.query.filter_by(o_id=o_id).first()
-    if order_item:
+    alipay = Alipay.query.filter_by(o_id=o_id).first()
+    if alipay:
         # 如果数据库已经标记支付成功，直接返回
-        if order_item.o_alipay == "PAID":
+        if alipay.o_alipay == "PAID":
             return jsonify({"status": 200, "message": "PAID"})
         # 否则，主动查询支付宝订单状态
-        alipay = create_alipay()
-        result = alipay.api_alipay_trade_query(out_trade_no=o_id)
+        alipay_query = create_alipay()
+        result = alipay_query.api_alipay_trade_query(out_trade_no=o_id)
         if result.get("trade_status") == "TRADE_SUCCESS":
             update_order_item_state(o_id)
             return jsonify({"status": 200, "message": "PAID"})
@@ -131,7 +132,7 @@ def update_star():
         return jsonify({"status": 400, "msg": "参数缺失"})
 
     # 查询医生信息
-    doctor = Doctor.query.filter_by(d_id=d_id).first()
+    doctor = DoctorDetails.query.filter_by(d_id=d_id).first()
 
     if not doctor:
         return jsonify({"status": 404, "msg": "医生不存在"})

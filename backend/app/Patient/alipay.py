@@ -15,7 +15,7 @@ def alipay_pay():
         return jsonify({"error": "请求体不能为空"})
 
     subject = data.get("subject")
-    trade_no = data.get("tradeNo")
+    trade_no = data.get("oId")
     total_amount = data.get("totalAmount")
     passback_params = data.get("passbackParams")  # 传递支付类型
 

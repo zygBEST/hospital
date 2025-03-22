@@ -1,7 +1,7 @@
 # 导入挂号信息管理蓝图对象
 from flask import Blueprint, jsonify, request
 
-from app.models import Order, OrderDetail, OrderItem, Patient
+from app.models import Alipay, Order, OrderDetail, OrderItem, Patient
 from app import db
 
 
@@ -15,11 +15,12 @@ def find_all_orders():
     size = request.args.get("size", type=int, default=10)
     query = request.args.get("query", default="")
 
-    # 关联查询 Order、OrderDetail、OrderItem
+    # 关联查询 Order、OrderDetail、OrderItem、Alipay
     orders_query = (
-        db.session.query(Order, OrderDetail, OrderItem)
+        db.session.query(Order, OrderDetail, OrderItem, Alipay)
         .join(OrderDetail, Order.o_id == OrderDetail.o_id)  # 关联订单详情表
         .join(OrderItem, Order.o_id == OrderItem.o_id)  # 关联订单项目表
+        .join(Alipay, Order.o_id == Alipay.o_id)  # 关联支付记录表
         .filter(Order.p_id.like(f"%{query}%"))  # 可选的搜索条件
         .order_by(Order.o_start.desc())
     )
@@ -31,7 +32,7 @@ def find_all_orders():
 
     # 处理查询结果，将 Order、OrderDetail、OrderItem 合并到同一层级
     orders_list = []
-    for order, order_detail, order_item in orders_paginated.items:
+    for order, order_detail, order_item, alipay in orders_paginated.items:
         orders_list.append(
             {
                 "oId": order.o_id,
@@ -39,12 +40,12 @@ def find_all_orders():
                 "dId": order.d_id,
                 "oStart": order.o_start,
                 "oEnd": order.o_end,
-                "oAlipay": order.o_alipay,
+                "oAlipay": alipay.o_alipay,
                 "oRecord": order_detail.o_record,
                 "oDrug": order_item.o_drug,
                 "oCheck": order_item.o_check,
-                "oTotalPrice": order_item.o_total_price,
-                "oPriceState": order_item.o_price_state,
+                "oTotalPrice": alipay.o_total_price,
+                "oPriceState": alipay.o_price_state,
                 "oState": order.o_state,
             }
         )
@@ -67,9 +68,11 @@ def delete_order():
     print(o_id)
     order_detail = OrderDetail.query.filter_by(o_id=o_id).first()
     order_item = OrderItem.query.filter_by(o_id=o_id).first()
+    alipay = Alipay.query.filter_by(o_id=o_id).first()
     order = Order.query.filter_by(o_id=o_id).first()
     db.session.delete(order_detail)
     db.session.delete(order_item)
+    db.session.delete(alipay)
     db.session.delete(order)
     db.session.commit()
 

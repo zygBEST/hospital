@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from sqlalchemy import and_
 from app import db, redis_client
-from app.models import Arrange, Doctor
+from app.models import Arrange, Doctor, DoctorDetails
 
 
 # 创建排班信息管理蓝图对象
@@ -22,13 +22,16 @@ def find_doctor_by_section_page():
         # 构建查询条件
         filters = []
         if d_section:
-            filters.append(Doctor.d_section == d_section)
+            filters.append(DoctorDetails.d_section == d_section)
         if query:
-            filters.append(Doctor.d_name.like(f"%{query}%"))  # 模糊查询医生姓名
+            filters.append(Doctor.d_name.like(f"%{query}%"))  # 关联 Doctor 进行模糊查询
 
-        # 查询符合条件的医生，按 d_state 降序排序
-        doctors_query = Doctor.query.filter(and_(*filters)).order_by(
-            Doctor.d_state.desc()
+        # 查询符合条件的医生，使用 `join` 连接 `Doctor`
+        doctors_query = (
+            db.session.query(Doctor, DoctorDetails)
+            .join(DoctorDetails, Doctor.d_id == DoctorDetails.d_id)
+            .filter(*filters)
+            .order_by(Doctor.d_state.desc())  # 使用 `Doctor.d_state` 排序
         )
 
         # 分页
@@ -38,20 +41,20 @@ def find_doctor_by_section_page():
 
         # 获取医生列表
         doctor_list = []
-        for doctor in paginated_doctors.items:
+        for doctor, details in paginated_doctors.items:
             # 查询医生是否已排班
             arrange = Arrange.query.filter_by(
                 ar_time=arrange_date, d_id=doctor.d_id
             ).first()
-            arrange_id = arrange.ar_id if arrange else None  # 获取排班ID
+            arrange_id = arrange.ar_id if arrange else None  # 获取排班 ID
 
             doctor_list.append(
                 {
                     "dId": doctor.d_id,
                     "dName": doctor.d_name,
-                    "dGender": doctor.d_gender,
-                    "dPost": doctor.d_post,
-                    "dSection": doctor.d_section,
+                    "dGender": details.d_gender,
+                    "dPost": details.d_post,
+                    "dSection": details.d_section,
                     "arrangeId": arrange_id,  # 如果有排班，返回排班 ID
                 }
             )
@@ -72,6 +75,7 @@ def find_doctor_by_section_page():
 
     except Exception as e:
         return jsonify({"status": 500, "message": "服务器错误", "error": str(e)})
+
 
 
 # 添加医生排班

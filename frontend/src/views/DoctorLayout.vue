@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="indexPeople" style="margin-left: 550px">
+
+    <div class="indexPeople" style="margin-left: 10%">
+
       <div class="userImage">
         <i class="el-icon-user" style="font-size: 132px"></i>
       </div>
@@ -14,6 +16,15 @@
         </div>
       </div>
     </div>
+    <!-- 排班信息表格 -->
+    <el-card>
+      <el-row>
+        <el-table :data="arranges" stripe style="width: 100%;font-size: larger;" border>
+          <el-table-column prop="ar_time" label="最近排班日期"></el-table-column>
+        </el-table>
+      </el-row>
+    </el-card>
+
     <el-row>
       <el-col :span="24">
         <img src="@/assets/16.png" style="width: 641px;margin-left: 490px;">
@@ -31,6 +42,7 @@ export default {
     return {
       userId: 1,
       orderPeople: 1,
+      arranges: [], // 存储排班数据
     };
   },
   methods: {
@@ -48,12 +60,32 @@ export default {
           this.orderPeople = res.data.data;
         });
     },
+    // 获取医生排班信息
+    requestSchedule() {
+      request
+        .get("doctor/arrangeByDid", {
+          params: {
+            dId: this.userId,
+          },
+        })
+        .then((res) => {
+          if (res.data.status === 200) {
+            this.arranges = res.data.data;
+          } else {
+            this.$message.error("排班数据获取失败");
+          }
+        })
+        .catch(() => {
+          this.$message.error("服务器异常，无法获取排班数据");
+        });
+    },
   },
   created() {
     const token = getToken(); // 获取 token
     this.userId = jwtDecode(token).user_id;
     console.log(this.userId);
     this.requestPeople();
+    this.requestSchedule(); // 获取排班信息
   },
 };
 </script>

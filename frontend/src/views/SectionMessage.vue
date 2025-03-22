@@ -212,7 +212,7 @@ export default {
                             // 调用支付接口
                             return request.post("alipay/pay", {
                                 subject: this.orderForm.pName + "挂号费",
-                                tradeNo: "gh" + orderId,
+                                oId: "gh" + orderId,
                                 totalAmount: this.orderForm.dPrice, // 费用
                                 passbackParams: "registration"  // 挂号支付
                             });
@@ -288,7 +288,9 @@ export default {
                     },
                 })
                 .then((res) => {
-                    this.sectionData = res.data;
+                    this.sectionData = res.data.data;
+                    console.log(res.data.data);
+                    
                     this.clickTag = true;
                 });
         },
@@ -365,7 +367,6 @@ export default {
 <style scoped lang="scss">
 .dateUl li {
     display: inline;
-    //margin: 5px;
     padding: 1px;
 }
 

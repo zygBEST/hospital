@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, request
 from app import db
 from app.Admin.checks import find_all_checks
-from app.models import Doctor, Order, OrderDetail, OrderItem, Patient
+from app.models import Alipay, Doctor, Order, OrderDetail, OrderItem, Patient
 
 
 ordertoday = Blueprint("ordertoday", __name__)
@@ -15,9 +15,10 @@ def findOrderByToday():
 
     # 查询当天的订单
     orders = (
-        db.session.query(Order, Patient.p_name, Doctor.d_name)
+        db.session.query(Order, Patient.p_name, Doctor.d_name, Alipay.o_gh_alipay)
         .join(Patient, Order.p_id == Patient.p_id)  # 连接 Patient 表，获取 p_name
         .join(Doctor, Order.d_id == Doctor.d_id)  # 连接 Doctor 表，获取 d_name
+        .join(Alipay, Order.o_id == Alipay.o_id)  # 连接 Alipay 表，获取 gh_alipay
         .filter(Order.d_id == d_id)  # 根据 d_id 过滤
         .filter(Order.o_state == 0)
         .filter(Order.o_start.like(f"{today}%"))  # 根据 o_start 过滤，确保是当天的订单
@@ -26,13 +27,13 @@ def findOrderByToday():
 
     # 简化返回数据，直接合并订单信息、患者姓名、医生姓名
     result = [
-        {**order.to_dict(), "pName": p_name, "dName": d_name}
-        for order, p_name, d_name in orders
+        {**order.to_dict(), "pName": p_name, "dName": d_name, "oGhAlipay": o_gh_alipay}
+        for order, p_name, d_name, o_gh_alipay in orders
     ]
 
     return jsonify({"status": 200, "msg": "查询成功", "data": result})
 
-# 创建挂号订单
+# 创建挂号处方
 @ordertoday.route("/doctor/updateOrder", methods=["POST"])
 def update_order():
     try:
@@ -71,6 +72,11 @@ def update_order():
         order_item.o_drug = o_drug
         order_item.o_check = o_check
         order_item.o_total_price = o_total_price
+        # 创建支付记录
+        alipay = Alipay.query.filter_by(o_id=o_id).first()
+        if alipay:
+            alipay.o_price_state = 0  # 支付状态未支付
+            alipay.o_total_price = o_total_price
 
         # 提交数据库事务
         db.session.commit()

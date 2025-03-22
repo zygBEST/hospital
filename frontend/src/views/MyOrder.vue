@@ -81,8 +81,6 @@ export default {
     methods: {
         //评价点击确认
         starClick() {
-            console.log(this.star);
-            console.log(this.dId);
             request
                 .get("doctor/updateStar", {
                     params: {
@@ -110,7 +108,7 @@ export default {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     subject: `${pName}就诊费用`,
-                    tradeNo: oId,
+                    oId: oId,
                     totalAmount: oTotalPrice,
                     passbackParams: "order" //订单支付
                 })
@@ -143,7 +141,7 @@ export default {
                             clearInterval(pollOrderStatus); // 停止轮询
                             this.$message.success("支付成功！");
                             // 调用其他后续接口，例如更新订单状态和医生信息
-                            this.findDoctor(dId, oId);
+                            this.findDoctor(dId);
                         }
                     })
                     .catch((error) => {
@@ -152,10 +150,10 @@ export default {
             }, pollInterval);
         },
 
-        findDoctor(dId, oId) {
+        findDoctor(dId) {
             request
-                .get("doctor/findDoctorById", {
-                    params: { dId: dId },
+                .post("doctor/findDoctorById", {
+                    dId: dId
                 })
                 .then((res) => {
                     if (res.data.status === 200) {

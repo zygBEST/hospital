@@ -2,13 +2,15 @@ from datetime import datetime, timedelta
 from flask import Blueprint, jsonify
 from sqlalchemy import distinct, func
 
-from app.models import Doctor, Order, Patient
+from app.models import Alipay, Doctor, DoctorDetails, Order, Patient
 from app import db
 
 # 定义数据统计分析蓝图对象
 dataExpore = Blueprint("dataExpore", __name__)
 
 """统计不同年龄段患者人数"""
+
+
 @dataExpore.route("/patient/patientAge", methods=["GET"])
 def patient_age():
     # 定义年龄段
@@ -19,70 +21,72 @@ def patient_age():
         db.session.query(func.count(distinct(Patient.p_id)))
         .join(Order, Order.p_id == Patient.p_id)  # 关联 orders 表
         .filter(Patient.p_age.between(start, end))  # 按年龄筛选
-        .filter(Order.o_state == 1)  # 只统计 o_state = 1 的订单
+        .filter(Alipay.o_gh_alipay != None)  # 统计有效订单
         .scalar()
         for start, end in age_ranges
     ]
-
-    return jsonify({
-        "status": 200,
-        "msg": "统计年龄分布成功",
-        "data": age_list
-    })
+    return jsonify({"status": 200, "msg": "统计年龄分布成功", "data": age_list})
 
 
-"""统计不同年龄段患者人数"""
+"""统计性别比例"""
 @dataExpore.route("/order/orderGender", methods=["GET"])
 def order_gender():
     results = (
-    db.session.query(
-        Patient.p_gender, 
-        func.count(distinct(Patient.p_id)).label("countGender")  # 统计唯一 p_id
-    )
-    .join(Order, Order.p_id == Patient.p_id)  # 关联 orders 表
-    .group_by(Patient.p_gender)  # 按性别分组
-    .all()
-)
-
-    # 构造返回的 JSON 数据
-    data = [{"patient": {"pGender": gender}, "countGender": count} for gender, count in results]
-
-    return jsonify({
-        "status": 200,
-        "msg": "查询成功",
-        "data": data
-    })
-
-"""统计近20天各科室挂号人数"""
-@dataExpore.route("/order/orderSection", methods=["GET"])
-def order_section():
-    start_time = (datetime.today() - timedelta(days=20)).strftime("%Y-%m-%d")
-    end_time = (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d 00:00:00")
-    print(start_time, end_time)
-
-    results = (
-        db.session.query(Doctor.d_section, func.count(Order.d_id).label("countSection"))
-        .join(Order, Order.d_id == Doctor.d_id)
-        .filter(Order.o_start.between(start_time, end_time))
-        .group_by(Doctor.d_section)
+        db.session.query(
+            Patient.p_gender,
+            func.count(distinct(Patient.p_id)).label("countGender"),  # 统计唯一 p_id
+        )
+        .join(Order, Order.p_id == Patient.p_id)  # 关联 orders 表
+        .group_by(Patient.p_gender)  # 按性别分组
         .all()
     )
 
     # 构造返回的 JSON 数据
-    data = [{"doctor": {"dSection": d_section}, "countSection": count} for d_section, count in results]
+    data = [
+        {"patient": {"pGender": gender}, "countGender": count}
+        for gender, count in results
+    ]
+
+    return jsonify({"status": 200, "msg": "查询成功", "data": data})
+
+
+"""统计近20天各科室挂号人数"""
+
+
+@dataExpore.route("/order/orderSection", methods=["GET"])
+def order_section():
+    start_time = (datetime.today() - timedelta(days=20)).strftime("%Y-%m-%d")
+    end_time = (datetime.today() + timedelta(days=1)).strftime("%Y-%m-%d 00:00:00")
+
+    results = (
+        db.session.query(
+            DoctorDetails.d_section, func.count(Order.d_id).label("countSection")
+        )
+        .join(Order, Order.d_id == DoctorDetails.d_id)
+        .filter(Order.o_start.between(start_time, end_time))
+        .group_by(DoctorDetails.d_section)
+        .all()
+    )
+
+    # 构造返回的 JSON 数据
+    data = [
+        {"doctor": {"dSection": d_section}, "countSection": count}
+        for d_section, count in results
+    ]
 
     print(data)
-    return jsonify({
-        "status": 200,
-        "msg": "统计过去 20 天科室挂号人数成功",
-        "data": data
-    })
+    return jsonify(
+        {"status": 200, "msg": "统计过去 20 天科室挂号人数成功", "data": data}
+    )
+
 
 """统计近二十天挂号人数"""
+
+
 @dataExpore.route("/order/orderTwenty", methods=["GET"])
 def order_twenty():
     result = []
-    
+
     for i in range(20, -1, -1):  # 过去 20 天
         o_start = (datetime.today() - timedelta(days=i)).strftime("%Y-%m-%d")
 
@@ -94,8 +98,6 @@ def order_twenty():
 
         result.append(count)
 
-    return jsonify({
-        "status": 200,
-        "msg": "获取过去 20 天的挂号人数成功",
-        "data": result
-    })
+    return jsonify(
+        {"status": 200, "msg": "获取过去 20 天的挂号人数成功", "data": result}
+    )

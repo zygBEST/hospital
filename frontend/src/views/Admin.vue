@@ -189,7 +189,7 @@ export default {
     },
     reloadComponent() {
       this.componentKey++; // 每次点击都会改变 key 值
-      console.log("组件被重新加载");
+      return this.$message.success("已加载最新数据");
     },
   },
   beforeUnmount() {
@@ -206,8 +206,10 @@ export default {
 </script>
 <style scoped lang="scss">
 .logo {
-  user-select: none; /* 禁止选中文本 */
-  cursor: pointer; /* 鼠标变成小手 */
+  user-select: none;
+  /* 禁止选中文本 */
+  cursor: pointer;
+  /* 鼠标变成小手 */
 }
 
 .el-header {

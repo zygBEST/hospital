@@ -88,15 +88,15 @@ export default {
         //请求医生信息
         requestDoctor() {
             request
-                .get("doctor/findDoctorById", {
-                    params: {
+                .post("doctor/findDoctorById", {
                         dId: this.userId,
-                    },
                 })
                 .then((res) => {
                     if (res.data.status != 200)
                         return this.$message.error("获取数据失败");
                     this.doctorData = res.data.data;
+                    console.log(res.data.data);
+                    
                 });
         }
     },

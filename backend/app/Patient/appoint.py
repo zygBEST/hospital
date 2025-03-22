@@ -1,7 +1,15 @@
 import random
 from flask import Blueprint, jsonify, request
 import redis
-from ..models import Arrange, Doctor, Order, OrderDetail, OrderItem
+from ..models import (
+    Alipay,
+    Arrange,
+    Doctor,
+    DoctorDetails,
+    Order,
+    OrderDetail,
+    OrderItem,
+)
 from sqlalchemy.orm import joinedload
 from app import redis_client, db
 
@@ -14,7 +22,7 @@ appoint = Blueprint("appoint", __name__)
 @appoint.route("/patient/findDoctorBySection", methods=["GET"])
 def find_doctor_by_section():
     d_section = request.args.get("dSection").strip()
-    doctors = Doctor.query.filter(Doctor.d_section == d_section).all()
+    doctors = DoctorDetails.query.filter(DoctorDetails.d_section == d_section).all()
     doctor_list = [doctor.to_dict() for doctor in doctors]
 
     return jsonify({"status": 200, "msg": "查询成功", "data": {"doctors": doctor_list}})
@@ -26,18 +34,21 @@ def find_doctor_by_time():
     ar_time = request.args.get("arTime").strip()
     d_section = request.args.get("dSection").strip()
 
-    # 查询 Doctor 表，同时确保其对应的 Arrange 表中 ar_time 匹配
+    # 查询医生信息，确保其在 Arrange 表中有相应的排班
     doctors = (
-        Doctor.query.join(Arrange, Doctor.d_id == Arrange.d_id)  # 关联 Arrange 表
-        .filter(
-            Doctor.d_section == d_section, Arrange.ar_time == ar_time
-        )  # 同时满足两个条件
-        .options(joinedload(Doctor.arranges))  # 预加载关联数据，防止N+1问题
+        db.session.query(Doctor, DoctorDetails)
+        .join(DoctorDetails, Doctor.d_id == DoctorDetails.d_id)
+        .join(Arrange, Doctor.d_id == Arrange.d_id)
+        .filter(DoctorDetails.d_section == d_section, Arrange.ar_time == ar_time)
         .all()
     )
 
-    # 返回 JSON 数据
-    return jsonify([doctor.to_dict() for doctor in doctors])
+    # 组装返回数据
+    doctor_list = [
+        {**doctor.to_dict(), **details.to_dict(), "arTime": ar_time}
+        for doctor, details in doctors
+    ]
+    return jsonify({"status": 200, "message": "查询成功", "data": doctor_list})
 
 
 # 获取挂号时间段已剩余票数
@@ -126,14 +137,14 @@ def add_order():
                 except redis.WatchError:
                     continue  # 重新尝试
 
-    # 创建订单
+    # 创建挂号单
     new_order = Order(
         o_id=random_oid(p_id),
         p_id=p_id,
         d_id=d_id,
-        o_state=0,  # 默认订单状态
         o_start=o_start[:22],  # 格式化时间，保留前22个字符
         o_end=None,  # 结束时间
+        o_state=0,  # 默认订单状态
     )
 
     # 将新订单添加到数据库
@@ -142,11 +153,9 @@ def add_order():
     # 创建订单项，关联到订单
     new_order_item = OrderItem(
         o_id=new_order.o_id,  # 关联刚刚创建的订单
-        o_drug=None,  # 药品信息，根据实际情况添加
-        o_check=None,  # 检查项目，根据实际情况添加
-        o_total_price=0.00,  # 总价，根据实际计算
-        o_price_state=0,  # 默认费用支付状态
-        o_alipay=None,  # 支付宝交易信息，根据实际情况添加
+        o_drug=None,  # 药品信息
+        o_check=None,  # 检查项目
+        o_total_price=0.00,  # 总价
     )
 
     # 将新订单项添加到数据库
@@ -161,6 +170,17 @@ def add_order():
 
     # 将新订单详情添加到数据库
     db.session.add(new_order_detail)
+
+    # 创建支付记录，关联到刚刚创建的订单
+    new_alipay = Alipay(
+        o_id=new_order.o_id,  # 关联刚刚创建的订单
+        o_price_state=0,  # 支付状态，根据实际情况添加
+        o_total_price=0.00,  # 支付金额，根据实际情况添加
+        o_gh_alipay=None,  # 支付宝交易号，根据实际情况添加
+        o_alipay=None,  # 支付宝交易号，根据实际情况添加
+    )
+    # 将支付记录添加到数据库
+    db.session.add(new_alipay)
 
     # 提交事务
     db.session.commit()

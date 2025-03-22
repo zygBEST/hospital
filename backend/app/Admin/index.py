@@ -1,6 +1,6 @@
 # 创建管理员首页蓝图对象
 from datetime import datetime
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 from sqlalchemy import or_
 
 from app.models import Bed, Order

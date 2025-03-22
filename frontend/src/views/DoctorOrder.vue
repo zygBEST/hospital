@@ -21,7 +21,7 @@
                 <el-table-column prop="oRecord" label="病因" width="200px"></el-table-column>
                 <el-table-column prop="oDrug" label="药物" width="180px"></el-table-column>
                 <el-table-column prop="oCheck" label="检查项目" width="180px"></el-table-column>
-                <el-table-column prop="oTotalPrice" label="需交费用/元" width="80px"></el-table-column>
+                <el-table-column prop="TotalPrice" label="需交费用/元" width="80px"></el-table-column>
                 <el-table-column prop="oPriceState" label="缴费状态" width="100px">
                     <template slot-scope="scope">
                         <el-tag type="success" v-if="scope.row.oPriceState === 1">已缴费</el-tag>

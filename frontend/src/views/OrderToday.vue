@@ -1,6 +1,6 @@
 <template>
     <el-card>
-        <el-table :data="orderData" stripe border>
+        <el-table :data="orderData" stripe style="width: 100%" border>
             <el-table-column label="序号" type="index" width="50">
             </el-table-column>
             <el-table-column label="挂号单号" prop="oId"></el-table-column>
@@ -8,13 +8,13 @@
             <el-table-column label="患者姓名" prop="pName"></el-table-column>
             <el-table-column label="医生姓名" prop="dName"></el-table-column>
             <el-table-column label="挂号时间" prop="oStart" width="200px"></el-table-column>
-            <el-table-column label="挂号费用支付" prop="oAlipay" width="200px">
+            <el-table-column label="挂号费用支付" prop="oGhAlipay" width="200px">
                 <template slot-scope="scope">
                     <el-tag type="success" v-if="
-                        scope.row.oAlipay === 'PAID'
+                        scope.row.oGhAlipay === 'PAID'
                     ">已支付</el-tag>
                     <el-tag type="danger" v-if="
-                        scope.row.oAlipay === null
+                        scope.row.oGhAlipay === null
                     ">未支付</el-tag>
                 </template>
             </el-table-column>
@@ -22,7 +22,7 @@
                 <template slot-scope="scope">
                     <el-button type="warning" style="font-size: 18px" @click="dealClick(scope.row.oId, scope.row.pId)"
                         v-if="
-                            scope.row.oAlipay === 'PAID'
+                            scope.row.oGhAlipay === 'PAID'
                         ">
                         <i class="el-icon-monitor" style="font-size: 18px"></i>
                         处理

@@ -12,9 +12,9 @@ class Patient(db.Model):
     p_phone = db.Column(db.String(255), nullable=True)
     p_card = db.Column(db.String(255), nullable=True)
     p_email = db.Column(db.String(255), nullable=True)
-    p_state = db.Column(db.Integer, nullable=True)  # 新增字段
+    p_state = db.Column(db.Integer, nullable=True)
     p_birthday = db.Column(db.String(255), nullable=True)
-    p_age = db.Column(db.Integer, nullable=True)  # 新增字段
+    p_age = db.Column(db.Integer, nullable=True)
 
     def to_dict(self):
         return {
@@ -43,12 +43,35 @@ class Admini(db.Model):
     a_email = db.Column(db.String(255), nullable=True)
 
 
-# 与数据库表对应的医生类：
+# 与数据库表对应的医生账号类：
 class Doctor(db.Model):
     __tablename__ = "doctor"
 
     d_id = db.Column(db.Integer, primary_key=True, nullable=False)
     d_password = db.Column(db.String(255), nullable=True)
+    d_name = db.Column(db.String(255), nullable=True)
+    d_state = db.Column(db.Integer, nullable=False)
+
+    # 关联到 DoctorDetails
+    details = db.relationship(
+        "DoctorDetails", back_populates="doctor", uselist=False, cascade="all, delete"
+    )
+
+    def to_dict(self):
+        return {
+            "dId": self.d_id,
+            "dName": self.d_name,
+            "dState": self.d_state,
+        }
+
+
+# 与数据库表对应的医生详细信息类：
+class DoctorDetails(db.Model):
+    __tablename__ = "doctor_details"
+
+    d_id = db.Column(
+        db.Integer, db.ForeignKey("doctor.d_id"), primary_key=True, nullable=False
+    )
     d_name = db.Column(db.String(255), nullable=True)
     d_gender = db.Column(db.String(255), nullable=True)
     d_phone = db.Column(db.String(255), nullable=True)
@@ -57,26 +80,27 @@ class Doctor(db.Model):
     d_post = db.Column(db.String(255), nullable=True)
     d_introduction = db.Column(db.String(255), nullable=True)
     d_section = db.Column(db.String(255), nullable=True)
-    d_state = db.Column(db.Integer, nullable=False)
     d_price = db.Column(db.Numeric(10, 2), nullable=True)
     d_people = db.Column(db.Integer, nullable=True)
     d_star = db.Column(db.Numeric(10, 2), nullable=True)
     d_avg_star = db.Column(db.Numeric(10, 2), nullable=True)
+
+    # 关联到 Doctor
+    doctor = db.relationship("Doctor", back_populates="details")
 
     def to_dict(self):
         return {
             "dId": self.d_id,
             "dName": self.d_name,
             "dGender": self.d_gender,
-            "dPost": self.d_post,
-            "dSection": self.d_section,
-            "dCard": self.d_card,
             "dPhone": self.d_phone,
+            "dCard": self.d_card,
             "dEmail": self.d_email,
-            "dAvgStar": self.d_avg_star,
-            "dPrice": self.d_price,
+            "dPost": self.d_post,
             "dIntroduction": self.d_introduction,
-            "dState": self.d_state,
+            "dSection": self.d_section,
+            "dPrice": self.d_price,
+            "dAvgStar": self.d_avg_star,
         }
 
 
@@ -95,7 +119,7 @@ class Drug(db.Model):
         return {
             "drId": self.dr_id,
             "drName": self.dr_name,
-            "drPrice": round(float(self.dr_price),2) if self.dr_price else None,
+            "drPrice": round(float(self.dr_price), 2) if self.dr_price else None,
             "drNumber": self.dr_number,
             "drPublisher": self.dr_publisher,
             "drUnit": self.dr_unit,
@@ -114,7 +138,9 @@ class CheckItem(db.Model):
         return {
             "chId": self.ch_id,
             "chName": self.ch_name,
-            "chPrice": round(float(self.ch_price), 2) if self.ch_price is not None else None,
+            "chPrice": (
+                round(float(self.ch_price), 2) if self.ch_price is not None else None
+            ),
         }
 
 
@@ -145,9 +171,10 @@ class Bed(db.Model):
             "bEnd": self.b_end,
         }
 
+
 # 与数据库表对应的患者床号类：
 class PBed(db.Model):
-    __tablename__ = 'p_bed'
+    __tablename__ = "p_bed"
 
     pb_id = db.Column(db.Integer, primary_key=True)  # 主键
     b_id = db.Column(db.Integer, nullable=True)  # 床位ID
@@ -170,6 +197,7 @@ class PBed(db.Model):
 
 
 # 与数据库表对应的挂号类：
+# 挂号时生成该表
 class Order(db.Model):
     __tablename__ = "orders"
 
@@ -180,15 +208,14 @@ class Order(db.Model):
     d_id = db.Column(
         db.Integer, db.ForeignKey("doctor.d_id"), nullable=False
     )  # 关联医生
-    o_start = db.Column(db.String(255), nullable=False)  # 预约开始时间
-    o_end = db.Column(db.String(255), nullable=False)  # 预约结束时间
-    o_state = db.Column(db.Integer, nullable=False)  # 订单状态
-    o_alipay = db.Column(db.String(255), nullable=True) #挂号支付状态
+    o_start = db.Column(db.String(255), nullable=False)  # 预约时间段
+    o_end = db.Column(db.String(255), nullable=False)  # 就诊结束时间
+    o_state = db.Column(db.Integer, nullable=False)  # 挂号状态
 
-
-    # 关联 order_details 和 order_items
+    # 关联 order_details 和 order_items 和 alipay
     details = db.relationship("OrderDetail", backref="order", lazy=True)
     items = db.relationship("OrderItem", backref="order", lazy=True)
+    alipay = db.relationship("Alipay", backref="order", lazy=True,uselist=False)
 
     def to_dict(self):
         return {
@@ -198,24 +225,21 @@ class Order(db.Model):
             "oStart": self.o_start,
             "oEnd": self.o_end,
             "oState": self.o_state,
-            "oAlipay": self.o_alipay,
         }
 
 
 # 订单详情表
+# 存储医生手写的记录以及手写的追诊记录
 class OrderDetail(db.Model):
     __tablename__ = "order_details"
-
-    od_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     o_id = db.Column(
-        db.Integer, db.ForeignKey("orders.o_id"), nullable=False
+        db.Integer, db.ForeignKey("orders.o_id"), primary_key=True, nullable=False
     )  # 关联 orders
     o_record = db.Column(db.String(255), nullable=True)  # 病历记录
     o_advice = db.Column(db.String(255), nullable=True)  # 医嘱
 
     def to_dict(self):
         return {
-            "odId": self.od_id,
             "oId": self.o_id,
             "oRecord": self.o_record,
             "oAdvice": self.o_advice,
@@ -223,29 +247,45 @@ class OrderDetail(db.Model):
 
 
 # 订单项（检查、药品等）
+# 存储非手写的记录
 class OrderItem(db.Model):
     __tablename__ = "order_items"
 
-    oi_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     o_id = db.Column(
-        db.Integer, db.ForeignKey("orders.o_id"), nullable=False
+        db.Integer, db.ForeignKey("orders.o_id"), primary_key=True, nullable=False
     )  # 关联 orders
     o_drug = db.Column(db.String(255), nullable=True)  # 药品信息
     o_check = db.Column(db.String(255), nullable=True)  # 检查项目
     o_total_price = db.Column(db.Numeric(10, 2), nullable=True)  # 订单总价
-    o_price_state = db.Column(db.Integer, nullable=True)  # 费用支付状态
-    o_alipay = db.Column(db.String(255), nullable=True)  # 支付宝交易信息
-    
 
     def to_dict(self):
         return {
-            "oiId": self.oi_id,
             "oId": self.o_id,
             "oDrug": self.o_drug,
             "oCheck": self.o_check,
             "oTotalPrice": self.o_total_price,
+        }
+
+
+# 与数据库对应的支付记录
+# 用于检查支付状态
+class Alipay(db.Model):
+    __tablename__ = "alipay"
+    o_id = db.Column(db.Integer, db.ForeignKey("orders.o_id"), primary_key=True)
+    o_price_state = db.Column(db.String(255), nullable=True)
+    o_total_price = db.Column(db.Numeric(10, 2), nullable=True)
+    o_gh_alipay = db.Column(db.String(255), nullable=True)
+    o_alipay = db.Column(db.String(255), nullable=True)
+    o_end = db.Column(db.String(255), nullable=True)
+
+    def to_dict(self):
+        return {
+            "oId": self.o_id,
             "oPriceState": self.o_price_state,
+            "oTotalPrice": self.o_total_price,
+            "oGhAlipay": self.o_gh_alipay,
             "oAlipay": self.o_alipay,
+            "oEnd": self.o_end,
         }
 
 
