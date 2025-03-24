@@ -47,7 +47,7 @@ export default {
             if (this.$route.path !== "/sectionIndex")
                 this.$router.push("sectionIndex");
         },
-        //获取当天及后7天的日期星期
+        //获取当天及后25天的日期星期
         nowDay(num) {
             var nowDate = new Date();
             nowDate.setDate(nowDate.getDate() + num);
@@ -64,7 +64,7 @@ export default {
         },
     },
     created() {
-        //获取当天的后7天
+        //获取当天的后25天
         for (var i = 0; i < 25; i++) {
             this.nowDay(i);
             //  获取激活路径

@@ -4,15 +4,17 @@
   justify-content: center;
  background-color: #427cb3;;
 " class="login-wrap">
-    <div style="display: flex; background-color: rgba(255, 255, 255, 0.82); width: 50%; border-radius: 5px; overflow: hidden">
+    <div
+      style="display: flex; background-color: rgba(255, 255, 255, 0.82); width: 50%; border-radius: 5px; overflow: hidden">
       <div style="flex: 1">
         <img src="@/assets/login1.png" alt="" style="width: 400px;height: 400px" />
       </div>
       <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
         <el-form :model="loginForm" style="width: 80%" :rules="loginRules" ref="ruleForm">
-          <div style="font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 20px">
-            欢迎登录医务管理系统
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">
+            <i>博爱惠民，以信立院！</i>
           </div>
+          <div style="font-size: small;color:darkgray">如有困难，请前往右侧导诊台咨询</div>
           <el-form-item prop="id">
             <!--必须绑定v-model输入框才能输入字符---->
             <el-input v-model="loginForm.id">
@@ -146,7 +148,7 @@ export default {
       },
       loginRules: {
         id: [
-          { required: true, message: "请输入账号编号", trigger: "blur" },
+          { required: true, message: "请输入账号", trigger: "blur" },
           { min: 3, max: 50, message: "长度在 3到 50 个字符", trigger: "blur" }
         ],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }]
@@ -392,7 +394,7 @@ export default {
         params.append(roleConfig.passwordKey, this.loginForm.password);
         params.append("user_role", this.role);
         console.log(this.role);
-        
+
 
         request.post(roleConfig.url, params)
           .then(res => {

@@ -320,7 +320,7 @@ export default {
             var time = month + "-" + date;
             this.monthDays.push(time);
         },
-        //请求部门医生信息
+        //请求科室医生信息
         requestSection() {
             request
                 .get("patient/findDoctorBySection", {
