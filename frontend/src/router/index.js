@@ -34,6 +34,7 @@ import echarts from 'echarts';//引入echarts
 import DealOrderAgain from "@/views/DealOrderAgain.vue";
 import DoctorCard from "@/views/DoctorCard.vue";
 import PatientCard from "@/views/PatientCard.vue"
+import ChatBot from "@/views/ChatBot.vue";
 
 Vue.prototype.$echarts = echarts;//引入echarts
 Vue.use(ElementUI);
@@ -184,6 +185,10 @@ const routes = [
       {
         path: "/patientCard",
         component: PatientCard,
+      },
+      {
+        path: "/ChatBot",
+        component: ChatBot,
       }
     ]
   },

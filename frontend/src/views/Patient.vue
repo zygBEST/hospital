@@ -39,19 +39,22 @@
         <!-- 导航菜单 -->
         <el-menu background-color="#fafafa" active-text-color="#637ce9" :default-active="activePath">
           <el-menu-item index="patientLayout" @click="menuClick('patientLayout')">
-            <i class="el-icon-s-home" style="font-size: 18px; ">首页</i>
+            <i class="el-icon-s-home" style="font-size: 18px; "> 首页</i>
           </el-menu-item>
           <el-menu-item index="oderOperate" @click="menuClick('orderOperate')">
-            <i class="el-icon-monitor" style="font-size: 18px; ">预约挂号</i>
+            <i class="el-icon-monitor" style="font-size: 18px; "> 预约挂号</i>
           </el-menu-item>
           <el-menu-item index="myOrder" @click="menuClick('myOrder')">
-            <i class="el-icon-postcard" style="font-size: 18px; ">我的挂号</i>
+            <i class="el-icon-postcard" style="font-size: 18px; "> 我的挂号</i>
           </el-menu-item>
           <el-menu-item index="myBed" @click="menuClick('myBed')">
-            <i class="el-icon-news" style="font-size: 18px; ">住院信息</i>
+            <i class="el-icon-news" style="font-size: 18px; "> 住院信息</i>
           </el-menu-item>
           <el-menu-item index="patientCard" @click="menuClick('patientCard')"><i class="el-icon-user"
               style="font-size: 18px; "> 个人信息</i>
+          </el-menu-item>
+          <el-menu-item index="ChatBot" @click="menuClick('ChatBot')"><i class="el-icon-s-opportunity" style="font-size: 18px; ">
+              AI聊天助手</i>
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -196,8 +199,10 @@ export default {
 </script>
 <style scoped lang="scss">
 .logo {
-  user-select: none; /* 禁止选中文本 */
-  cursor: pointer; /* 鼠标变成小手 */
+  user-select: none;
+  /* 禁止选中文本 */
+  cursor: pointer;
+  /* 鼠标变成小手 */
 }
 
 .el-header {

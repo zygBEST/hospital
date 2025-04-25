@@ -21,8 +21,6 @@ def order_people():
 # 统计今天住院人数
 @indexinfo.route("/admin/bedPeople", methods=["GET"])
 def bed_people():
-    today = datetime.now().strftime("%Y-%m-%d %H:%M")  # 获取今天的日期
-
     # 统计符合条件的住院人数
     count = (
         db.session.query(Bed).filter(Bed.b_state == 1).count()

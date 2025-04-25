@@ -41,6 +41,7 @@ def find_all_orders():
                 "oStart": order.o_start,
                 "oEnd": order.o_end,
                 "oAlipay": alipay.o_alipay,
+                "oGhAlipay": alipay.o_gh_alipay,
                 "oRecord": order_detail.o_record,
                 "oDrug": order_item.o_drug,
                 "oCheck": order_item.o_check,

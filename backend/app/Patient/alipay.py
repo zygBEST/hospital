@@ -3,6 +3,8 @@
 from flask import Blueprint, current_app, jsonify, request
 from app import create_alipay
 from app.Patient.patientorder import update_order_item_state, update_order_state
+from app.models import Alipay
+from app import db
 
 alipay = Blueprint("alipay", __name__)
 

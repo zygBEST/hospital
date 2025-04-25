@@ -31,11 +31,11 @@ def create_app():
     # 支付宝沙箱环境配置
     app.config["ALIPAY_CONFIG"] = {
         "APP_ID": "9021000141650869",
-        "APP_PRIVATE_KEY_PATH": "alipay/私钥数据.txt",
-        "ALIPAY_PUBLIC_KEY_PATH": "alipay/公钥数据.txt",
+        "APP_PRIVATE_KEY_PATH": "alipay\私钥数据.txt",
+        "ALIPAY_PUBLIC_KEY_PATH": "alipay\公钥数据.txt",
         "GATEWAY_URL": "https://openapi.alipaydev.com/gateway.do",  # 支付宝沙箱网关
-        "RETURN_URL": "http://localhost:5000/pay_success",  # 支付成功后跳转
-        "NOTIFY_URL": "http://f6wp3k.natappfree.cc/alipay/notify",  # 支付宝异步通知URL
+        "RETURN_URL": "http://localhost:5000/alipay/pay_success",  # 支付成功后跳转
+        "NOTIFY_URL": "http://agtzbv.natappfree.cc/alipay/notify",  # 支付宝异步通知URL
     }
 
     # 注册蓝图
@@ -59,6 +59,8 @@ def create_app():
     from app.Patient.bedinfo import pbedinfo
     from app.Admin.dataExpore import dataExpore
     from app.Patient.alipay import alipay
+    from app.Patient.AIchat import AIchat
+    from app.Patient.pdf import pdf
 
     # 将所有蓝图存入列表
     blueprints = [
@@ -82,6 +84,8 @@ def create_app():
         pbedinfo,
         dataExpore,
         alipay,
+        AIchat,
+        pdf,
     ]
 
     # 统一注册蓝图

@@ -143,6 +143,10 @@ def update_order_by_add():
             alipay_updated.o_total_price = o_total_price
             alipay_updated.o_price_state = 0
             alipay_updated.o_alipay = "UNPAID"
+            print("Type:", type(o_total_price), "Value:", o_total_price)
+            if o_total_price == 0:
+                alipay_updated.o_price_state = 1
+                alipay_updated.o_alipay = "PAID"
 
         # 提交所有修改
         db.session.commit()

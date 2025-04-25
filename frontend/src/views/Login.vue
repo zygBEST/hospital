@@ -83,7 +83,6 @@
         <el-button type="primary" @click="registerClick('registerForm')">确 定</el-button>
       </div>
     </el-dialog>
-
   </div>
 
 </template>

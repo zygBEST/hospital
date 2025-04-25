@@ -219,7 +219,7 @@ export default {
                         })
                         .then(data => {
                             console.log(data);
-                            
+
                             if (data.data.payUrl) {
                                 // 在新窗口打开支付宝支付页面
                                 window.open(data.data.payUrl, '_blank', 'width=800,height=600');
@@ -227,10 +227,10 @@ export default {
                                 console.log("请求 oId:", this.oId);
                                 // 设置轮询，确保支付完成后才继续
                                 const pollInterval = 5000; // 每5秒查询一次状态
-                                
+
                                 const pollOrderStatus = setInterval(() => {
                                     request
-                                        .get("order/o_state", {  
+                                        .get("order/o_state", {
                                             params: {
                                                 oId: this.oId.substring(2) // 去掉前两位
                                             },
@@ -290,7 +290,7 @@ export default {
                 .then((res) => {
                     this.sectionData = res.data.data;
                     console.log(res.data.data);
-                    
+
                     this.clickTag = true;
                 });
         },

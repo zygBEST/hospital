@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, jsonify
 from sqlalchemy import distinct, func
 
-from app.models import Alipay, Doctor, DoctorDetails, Order, Patient
+from app.models import Alipay, DoctorDetails, Order, Patient
 from app import db
 
 # 定义数据统计分析蓝图对象

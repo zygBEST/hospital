@@ -11,7 +11,7 @@
         </el-row>
         <!-- 表格 -->
         <el-table :data="orderData" stripe style="width: 100%" border>
-            <el-table-column prop="oId" label="挂号单号" width="80px"></el-table-column>
+            <el-table-column prop="oId" label="挂号单号" width="80px" fixed="left"></el-table-column>
             <el-table-column prop="pId" label="患者id" width="80px"></el-table-column>
 
             <el-table-column prop="dId" label="医生id" width="100px">
@@ -29,13 +29,13 @@
                     <el-tag type="danger" v-if="scope.row.oPriceState === 0 && scope.row.oState === 1">未缴费</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column label="挂号费用支付" prop="oAlipay" width="200px">
+            <el-table-column label="挂号费用支付" prop="oGhAlipay" width="200px">
                 <template slot-scope="scope">
                     <el-tag type="success" v-if="
-                        scope.row.oAlipay === 'PAID'
+                        scope.row.oGhAlipay === 'PAID'
                     ">已支付</el-tag>
                     <el-tag type="danger" v-if="
-                        scope.row.oAlipay === null
+                        scope.row.oGhAlipay === null
                     ">未支付</el-tag>
                 </template>
             </el-table-column>

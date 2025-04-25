@@ -213,9 +213,10 @@ class Order(db.Model):
     o_state = db.Column(db.Integer, nullable=False)  # 挂号状态
 
     # 关联 order_details 和 order_items 和 alipay
-    details = db.relationship("OrderDetail", backref="order", lazy=True)
-    items = db.relationship("OrderItem", backref="order", lazy=True)
+    details = db.relationship("OrderDetail", backref="order", lazy=True,uselist=False)
+    items = db.relationship("OrderItem", backref="order", lazy=True,uselist=False)
     alipay = db.relationship("Alipay", backref="order", lazy=True,uselist=False)
+    patient = db.relationship("Patient", backref="orders")
 
     def to_dict(self):
         return {
@@ -276,7 +277,7 @@ class Alipay(db.Model):
     o_total_price = db.Column(db.Numeric(10, 2), nullable=True)
     o_gh_alipay = db.Column(db.String(255), nullable=True)
     o_alipay = db.Column(db.String(255), nullable=True)
-    o_end = db.Column(db.String(255), nullable=True)
+    o_end_pay = db.Column(db.String(255), nullable=True)
 
     def to_dict(self):
         return {
@@ -285,7 +286,7 @@ class Alipay(db.Model):
             "oTotalPrice": self.o_total_price,
             "oGhAlipay": self.o_gh_alipay,
             "oAlipay": self.o_alipay,
-            "oEnd": self.o_end,
+            "oEndPay": self.o_end_pay,
         }
 
 

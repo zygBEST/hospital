@@ -126,11 +126,8 @@ def reduce_drug_number():
     # 获取 JSON 数据
     dr_id = request.json.get("drId")
     dr_number = request.json.get("usedNumber")
-    # 输出数据类型
-    print(type(dr_id))
-    print(type(dr_number))
 
-    # 查找要删除的药品对象
+    # 查找药品对象
     drug = Drug.query.filter_by(dr_id=dr_id).first()
     if drug.dr_number < dr_number:
         return jsonify({"status": 402, "message": "药品库存不足！"})
